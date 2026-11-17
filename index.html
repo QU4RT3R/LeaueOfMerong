@@ -1,0 +1,2070 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>메롤</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@400;600;800;900&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* 메롤: 칼바람 다리 위에 차린 점술 테이블. 위쪽 운명 띠, 가운데에 카드가 깔리는 무대, 끝은 전적표 한 장 */
+  --abyss:#091115;
+  --deck:#0f1b20;
+  --frost:#e4eef0;
+  --mist:#8fa5ab;
+  --foil:#d6b26a;
+  --tide:#6fb8c6;
+  --blood:#d46b5c;
+  --line:rgba(214,178,106,.22);
+  --font-display:"Hahmlet","Noto Serif KR","AppleMyungjo","Batang",serif;
+  --font-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  color-scheme:dark;
+}
+@property --spin{syntax:'<angle>';inherits:false;initial-value:0deg}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--abyss);color:var(--frost);font-family:var(--font-body);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:
+  radial-gradient(1100px 560px at 50% -12%,rgba(111,184,198,.17),transparent 62%),
+  radial-gradient(900px 480px at 50% 118%,rgba(214,178,106,.09),transparent 60%),
+  linear-gradient(180deg,#0b171c 0%,var(--abyss) 55%,#060c0f 100%)}
+#wind{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.topbar{position:sticky;top:0;z-index:6;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px;background:rgba(9,17,21,.86);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{font-family:var(--font-display);font-weight:900;font-size:24px;letter-spacing:.02em;line-height:1;background:none;border:0;color:var(--frost);padding:0}
+.fan-tag{font-size:12px;font-weight:600;color:var(--foil);border:1px solid rgba(214,178,106,.45);padding:2px 9px;border-radius:999px;white-space:nowrap}
+.top-actions{display:flex;align-items:center;gap:12px}
+.record{font-size:13px;color:var(--mist);font-variant-numeric:tabular-nums;white-space:nowrap}
+.shell{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 20px 32px}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:10px;border:1px solid rgba(228,238,240,.18);background:rgba(23,42,49,.72);color:var(--frost);font-weight:600;text-decoration:none;transition:background .2s,border-color .2s,transform .15s,filter .2s}
+.btn:hover:not(:disabled){border-color:rgba(228,238,240,.42);background:#172a31}
+.btn.primary{background:linear-gradient(180deg,#e6c582,#b8914a);color:#1b1407;border-color:#f1d89e;box-shadow:0 10px 26px -12px rgba(214,178,106,.75)}
+.btn.primary:hover:not(:disabled){filter:brightness(1.07);background:linear-gradient(180deg,#e6c582,#b8914a)}
+.btn.big{padding:14px 28px;font-size:17px}
+.btn.small{padding:6px 12px;font-size:13px}
+.btn:disabled{opacity:.38;cursor:not-allowed}
+.btn kbd{font-family:inherit;font-size:11px;opacity:.65;border:1px solid currentColor;border-radius:4px;padding:0 5px}
+:focus-visible{outline:2px solid var(--tide);outline-offset:3px}
+.eyebrow{margin:0 0 6px;font-size:12.5px;font-weight:600;letter-spacing:.08em;color:var(--foil)}
+.sub,.muted{color:var(--mist)}
+.center{text-align:center}
+h1,h2,h3,h4{text-wrap:balance}
+.screen{padding:8px 0 24px;min-height:62vh}
+.screen-head{margin:34px 0 0}
+.screen-head h2{font-family:var(--font-display);font-weight:800;font-size:clamp(28px,4vw,40px);margin:0;line-height:1.2}
+.screen-head .sub{margin:8px 0 0}
+
+/* 타이틀 */
+.title-screen{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:center;padding-top:52px}
+.mega{font-family:var(--font-display);font-weight:900;font-size:clamp(96px,15vw,176px);line-height:1.02;padding-bottom:.04em;margin:0;letter-spacing:-.02em;color:#eef7f8;background:linear-gradient(180deg,#f6fcfd 18%,#93c4ce 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.fan-line{display:inline-block;margin:18px 0 0;font-size:15px;font-weight:700;color:#1b1407;background:var(--foil);padding:3px 12px;border-radius:6px;letter-spacing:.03em}
+.lede{max-width:33em;color:#b9cacd;margin:20px 0 28px;font-size:16.5px}
+.title-facts{display:flex;gap:26px;flex-wrap:wrap;margin:30px 0 0;padding:0;list-style:none;color:var(--mist);font-size:13px}
+.title-facts b{display:block;color:var(--frost);font-family:var(--font-display);font-weight:800;font-size:22px;line-height:1.2}
+.showcase{position:relative;height:400px}
+.showcase .aug-card{position:absolute;width:222px;top:24px;left:50%;min-height:300px}
+.showcase .aug-card:nth-child(1){transform:translateX(-118%) translateY(34px) rotate(-9deg)}
+.showcase .aug-card:nth-child(2){transform:translateX(-50%);z-index:2}
+.showcase .aug-card:nth-child(3){transform:translateX(18%) translateY(34px) rotate(9deg)}
+
+/* 운명 띠 */
+.fate{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;padding:10px 14px;margin:22px 0 4px;border:1px solid var(--line);border-radius:14px;background:rgba(15,27,32,.78)}
+.fate b{font-weight:700}
+.fate small{color:var(--mist);font-size:12px;margin-left:4px}
+.fate-tarot,.fate-champ{display:flex;align-items:center;gap:10px}
+.mini-tarot{display:inline-grid;place-items:center;width:26px;height:40px;border-radius:4px;background:linear-gradient(180deg,#f1e7cf,#d6c193);color:#3b2d13;font-family:var(--font-display);font-weight:800;font-size:11px;box-shadow:inset 0 0 0 2px #efe3c5,inset 0 0 0 3px #8a6d33}
+.mini-tarot.rev{transform:rotate(180deg)}
+.fate-slots{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.slot{display:inline-flex;align-items:center;gap:8px;padding:3px 12px 3px 3px;border-radius:999px;border:1px dashed rgba(228,238,240,.22);font-size:13px;color:var(--mist);min-height:36px}
+.slot:not(.filled){padding-left:12px}
+.slot.filled{border-style:solid;border-color:rgba(228,238,240,.14);color:var(--frost);background:rgba(23,42,49,.85)}
+
+/* 증강 카드 */
+.tier-silver{--t:#bac6cd;--t-line:rgba(186,198,205,.5);--t-glow:rgba(186,198,205,.3)}
+.tier-gold{--t:#e6b95c;--t-line:rgba(230,185,92,.6);--t-glow:rgba(230,185,92,.42)}
+.tier-prism{--t:#efe7ff;--t-line:transparent;--t-glow:rgba(176,156,255,.45)}
+.aug-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:26px}
+.tier-title{font-family:var(--font-display);font-weight:900;font-size:clamp(30px,4.4vw,44px);margin:0;line-height:1.1;color:var(--t)}
+.tier-title.tier-prism{background:linear-gradient(90deg,#8fe3ff,#ffe08a,#ff9ab8,#b8a6ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.aug-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;margin-top:20px}
+.aug-card{position:relative;display:flex;flex-direction:column;gap:10px;padding:22px 20px 18px;border-radius:16px;background:linear-gradient(180deg,rgba(28,48,56,.97),rgba(12,22,27,.99));border:1px solid var(--t-line);box-shadow:0 24px 50px -28px var(--t-glow),inset 0 1px 0 rgba(255,255,255,.06);min-height:270px}
+.aug-card.tier-prism::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--spin),#8fe3ff,#ffe08a,#ff9ab8,#b8a6ff,#8fe3ff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 5s linear infinite;pointer-events:none}
+@keyframes spin{to{--spin:360deg}}
+.aug-tier{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--t)}
+.aug-card h3{font-family:var(--font-display);font-weight:800;font-size:22px;margin:0;line-height:1.25}
+.aug-card .desc{margin:0;color:#c8d5d8;font-size:14.5px;flex:1}
+.card-actions{display:flex;gap:8px;margin-top:4px}
+.card-actions .pick{flex:1}
+.special{position:absolute;top:14px;right:14px;font-size:11px;font-weight:700;color:#1b1407;background:var(--foil);padding:2px 9px;border-radius:999px}
+.aug-icon{position:relative;display:inline-grid;place-items:center;width:58px;height:58px;flex:none;clip-path:polygon(25% 4%,75% 4%,100% 50%,75% 96%,25% 96%,0 50%);background:linear-gradient(160deg,var(--t),#26363c 120%);color:#0c1418;font-family:var(--font-display);font-weight:900;font-size:22px;overflow:hidden}
+.aug-icon.tier-prism{background:conic-gradient(from 200deg,#8fe3ff,#ffe08a,#ff9ab8,#b8a6ff,#8fe3ff)}
+.aug-icon.sm{width:30px;height:30px;font-size:13px}
+.aug-icon.xs{width:22px;height:22px;font-size:10px}
+.hint{color:var(--mist);font-size:13px;margin:16px 0 0;text-align:center}
+.deal{animation:deal .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes deal{from{transform:translateY(18px) rotate(-1.2deg);opacity:0}to{transform:none;opacity:1}}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:4px 12px;border-radius:999px;border:1px solid rgba(228,238,240,.14);background:rgba(23,42,49,.75)}
+.chip.rule{border-color:rgba(214,178,106,.6);color:#f2ddb0}
+.chip.empty{opacity:.55}
+
+/* 그림 자리 */
+.art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .2s}
+.art.ok{opacity:1}
+.portrait{position:relative;display:inline-grid;place-items:center;width:56px;height:56px;flex:none;border-radius:12px;overflow:hidden;background:linear-gradient(150deg,var(--rc),#0b1418 135%);color:rgba(255,255,255,.93);font-family:var(--font-display);font-weight:900;font-size:24px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.13)}
+.role-tank{--rc:#5f86a3}.role-fighter{--rc:#b06a48}.role-assassin{--rc:#7c6a9e}.role-mage{--rc:#3e98a1}.role-marksman{--rc:#bf9844}.role-support{--rc:#6c9d69}
+.portrait.xl{width:220px;height:264px;border-radius:22px;font-size:112px}
+.portrait.lg{width:84px;height:84px;font-size:38px;border-radius:16px}
+.portrait.sm{width:32px;height:32px;font-size:15px;border-radius:8px}
+.portrait.xs{width:24px;height:24px;font-size:11px;border-radius:6px}
+.role-chip{display:inline-block;font-size:12px;font-weight:600;padding:1px 9px;border-radius:999px;border:1px solid var(--rc);color:#dfe9eb;background:rgba(9,17,21,.5)}
+
+/* 타로 */
+.spread{display:flex;justify-content:center;gap:clamp(10px,3.4vw,40px);margin:32px 0 8px}
+.tarot{position:relative;flex:none;width:clamp(96px,26vw,196px);aspect-ratio:3/5;padding:0;border:0;background:none;perspective:1400px;transition:transform .35s,opacity .45s;border-radius:14px}
+.tarot:hover:not(:disabled){transform:translateY(-10px)}
+.tarot:disabled{cursor:default}
+.tarot-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform 1s cubic-bezier(.2,.75,.2,1)}
+.tarot.flipped .tarot-inner{transform:rotateY(180deg)}
+.tarot.chosen{transform:translateY(-6px)}
+.tarot.dim{opacity:.26;transform:scale(.93)}
+.face{position:absolute;inset:0;display:block;border-radius:14px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.face.front{transform:rotateY(180deg)}
+.tb{position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(214,178,106,.11) 0 1px,transparent 1px 13px),repeating-linear-gradient(-45deg,rgba(214,178,106,.11) 0 1px,transparent 1px 13px),linear-gradient(180deg,#14303a,#0a161b);box-shadow:inset 0 0 0 1px rgba(214,178,106,.7),inset 0 0 0 7px #0c1a1f,inset 0 0 0 8px rgba(214,178,106,.5)}
+.tb .sigil{position:absolute;left:18%;right:18%;top:26%;color:var(--foil)}
+.tb-mark{position:absolute;left:0;right:0;bottom:11%;text-align:center;font-family:var(--font-display);font-weight:800;color:var(--foil);letter-spacing:.32em;font-size:14px;padding-left:.32em}
+.tf{position:absolute;inset:0;background:linear-gradient(180deg,#f3e9d1,#d7c393);color:#2b2213;box-shadow:inset 0 0 0 7px #efe3c5,inset 0 0 0 8px #8a6d33,0 0 50px rgba(240,220,170,.25)}
+.tf-inner{position:absolute;inset:0;display:grid;grid-template-rows:auto 1fr auto;justify-items:center;align-items:center;padding:18px 12px 16px}
+.tf.rev .tf-inner{transform:rotate(180deg)}
+.tf-num{font-family:var(--font-display);font-weight:800;font-size:clamp(13px,3.4vw,17px);letter-spacing:.12em}
+.tf-art{position:relative;width:100%;height:100%;display:grid;place-items:center;color:#7a5a22}
+.tf-art .sigil{width:80%}
+.tf-art .art{object-fit:contain}
+.tf-name{font-family:var(--font-display);font-weight:800;font-size:clamp(14px,3.8vw,19px);text-align:center;line-height:1.2}
+.reveal{max-width:660px;margin:22px auto 0;text-align:center}
+.reveal h3{font-family:var(--font-display);font-weight:900;font-size:clamp(30px,4vw,40px);margin:0;line-height:1.15}
+.reveal-desc{color:#c3d2d5;margin:10px auto 0;max-width:34em}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:16px 0 22px}
+
+/* 챔피언 */
+.champ-reveal{display:grid;grid-template-columns:auto 1fr;gap:36px;align-items:center;margin-top:30px}
+.champ-name{font-family:var(--font-display);font-weight:900;font-size:clamp(44px,6vw,64px);margin:0;line-height:1.05}
+.champ-title{margin:4px 0 0;color:var(--foil);font-family:var(--font-display);font-weight:600;font-size:18px}
+.champ-desc{margin:12px 0 0;color:#c3d2d5;max-width:36em}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:20px 0;max-width:560px}
+.stats div{padding:8px 12px;border-radius:10px;background:rgba(23,42,49,.7);border:1px solid rgba(228,238,240,.07)}
+.stats dt{font-size:12px;color:var(--mist)}
+.stats dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}
+.skill{margin:0 0 22px;color:#c3d2d5;font-size:14px}
+.skill b{color:var(--frost)}
+.mini-head{font-size:13px;font-weight:600;color:var(--mist);margin:34px 0 10px;letter-spacing:.06em}
+.ally-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ally{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:rgba(15,27,32,.82);border:1px solid rgba(228,238,240,.07)}
+.ally small{display:block;color:var(--mist);font-size:12px}
+
+.pick-title{color:var(--frost)}
+.champ-select{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:24px;margin-top:20px;align-items:start}
+.role-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.filter{cursor:pointer;color:var(--mist)}
+.filter[aria-pressed="true"]{border-color:var(--foil);color:#f2ddb0}
+.champ-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
+.pick-card{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 8px 10px;border-radius:14px;background:rgba(15,27,32,.85);border:1px solid rgba(228,238,240,.08);text-align:center;transition:border-color .2s,transform .15s}
+.pick-card:hover{border-color:rgba(214,178,106,.55);transform:translateY(-2px)}
+.pick-card[aria-pressed="true"]{border-color:var(--foil);box-shadow:inset 0 0 0 1px var(--foil),0 0 28px -12px rgba(214,178,106,.7)}
+.pick-card small{color:var(--mist);font-size:12px}
+.champ-detail{position:sticky;top:76px;padding:20px;border-radius:18px;border:1px solid var(--line);background:rgba(15,27,32,.92);scroll-margin-top:72px}
+.detail-head{display:flex;align-items:center;gap:16px}
+.champ-detail .champ-name{font-size:38px}
+.champ-detail .champ-desc{margin-top:12px;font-size:14px}
+.champ-detail .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:14px 0}
+.champ-detail .stats div{padding:5px 10px}
+.champ-detail .skill{margin-bottom:16px}
+.champ-detail .btn{width:100%}
+@media (max-width:860px){.champ-select{grid-template-columns:1fr}.champ-detail{position:static;order:-1}}
+
+/* 로딩 */
+.loading-tarot{display:flex;justify-content:center;margin-top:24px}
+.team{margin-top:18px}
+.team h3{font-family:var(--font-display);font-weight:800;font-size:20px;margin:0 0 10px}
+.team.ally-team h3{color:var(--tide)}
+.team.enemy-team h3{color:var(--blood)}
+.team-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.mini{display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 10px 12px;border-radius:14px;background:rgba(15,27,32,.85);border:1px solid rgba(228,238,240,.07);text-align:center;min-width:0}
+.ally-team .mini{border-top:2px solid var(--tide)}
+.enemy-team .mini{border-top:2px solid var(--blood)}
+.mini.me{box-shadow:inset 0 0 0 1px var(--foil),0 0 30px -12px rgba(214,178,106,.6)}
+.mini b{font-size:15px}
+.mini-augs{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;min-height:30px}
+.aug-names{margin:2px 0 0;padding:0;list-style:none;font-size:12px;color:#c3d2d5;line-height:1.45}
+.vs{font-family:var(--font-display);font-weight:900;text-align:center;color:var(--foil);font-size:22px;letter-spacing:.3em;margin:18px 0 0;padding-left:.3em}
+.go{display:flex;justify-content:center;margin-top:26px}
+
+/* 전투 */
+.battle{max-width:780px;margin:28px auto 0}
+.score{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:22px}
+.score .k{font-family:var(--font-display);font-weight:900;font-size:clamp(52px,9vw,80px);line-height:1;font-variant-numeric:tabular-nums}
+.score .k.a{color:var(--tide);text-align:right}
+.score .k.b{color:var(--blood)}
+.clock{display:grid;justify-items:center;color:var(--mist);font-size:12px}
+.clock b{font-size:22px;color:var(--frost);font-variant-numeric:tabular-nums;font-weight:600}
+.score-names{display:grid;grid-template-columns:1fr 1fr;gap:120px;color:var(--mist);font-size:13px;margin-top:2px}
+.score-names span:first-child{text-align:right}
+.towers{display:grid;gap:8px;margin:20px 0 14px}
+.tower-row{display:grid;grid-template-columns:72px repeat(6,1fr);align-items:center;gap:6px;font-size:12px;color:var(--mist)}
+.pip{height:7px;border-radius:4px;background:var(--pc);transition:background .4s,opacity .4s}
+.tower-row.ally-row-t{--pc:var(--tide)}
+.tower-row.enemy-row-t{--pc:var(--blood)}
+.pip.down{background:rgba(228,238,240,.1)}
+.feed{list-style:none;margin:0;padding:12px 14px;height:min(420px,52vh);overflow:auto;border:1px solid var(--line);border-radius:14px;background:rgba(7,13,16,.78);display:flex;flex-direction:column;gap:7px}
+.feed li{display:flex;align-items:center;gap:8px;font-size:14px;animation:feedin .28s ease both;flex-wrap:wrap}
+@keyframes feedin{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.feed .who{display:inline-flex;align-items:center;gap:6px;font-weight:600}
+.feed .ka{color:#a9dbe4}
+.feed .kb{color:#f0a497}
+.feed .verb{color:var(--mist);font-size:12px}
+.feed .fb{font-size:11px;font-weight:700;color:#1b1407;background:var(--foil);border-radius:999px;padding:1px 8px}
+.feed .fight{margin-top:6px;color:var(--foil);font-family:var(--font-display);font-weight:800;font-size:14px}
+.feed .fight:first-child{margin-top:0}
+.feed .end{color:#c3d2d5;font-size:13px;padding:4px 0 6px;border-bottom:1px dashed rgba(228,238,240,.1)}
+.feed .note{color:#d9c79f;font-size:13px}
+.feed .multi{font-family:var(--font-display);font-weight:900;font-size:18px;color:var(--foil)}
+.battle .go{margin-top:16px}
+
+/* 결과 */
+.verdict{text-align:center;padding:30px 0 4px}
+.verdict h2{font-family:var(--font-display);font-weight:900;font-size:clamp(76px,12vw,132px);margin:0;line-height:1}
+.verdict.win h2{color:var(--tide);text-shadow:0 0 46px rgba(111,184,198,.38)}
+.verdict.lose h2{color:var(--blood);text-shadow:0 0 46px rgba(212,107,92,.32)}
+.verdict-sub{color:#c3d2d5;margin:10px 0 0;font-variant-numeric:tabular-nums}
+.me-card{display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;padding:20px 22px;border:1px solid var(--line);border-radius:18px;background:rgba(15,27,32,.88);margin:24px 0}
+.kda{font-family:var(--font-display);font-weight:900;font-size:34px;margin:0;line-height:1.1;font-variant-numeric:tabular-nums}
+.kda .d{color:var(--blood)}
+.me-sub{color:#c3d2d5;margin:6px 0 10px;font-size:14px;font-variant-numeric:tabular-nums}
+.me-augs{display:flex;flex-wrap:wrap;gap:8px}
+.aug-pill{display:inline-flex;align-items:center;gap:6px;padding:3px 12px 3px 4px;border-radius:999px;border:1px solid var(--t-line);font-size:13px;background:rgba(9,17,21,.5)}
+.aug-pill.tier-prism{border-color:rgba(184,166,255,.6)}
+.build{margin:12px 0 0;font-size:14px;color:#c3d2d5}
+.stars{color:var(--foil);letter-spacing:.12em;margin:0 6px}
+.me-grade{display:grid;justify-items:center;gap:2px;min-width:110px}
+.grade{font-family:var(--font-display);font-weight:900;font-size:76px;line-height:1;color:var(--foil)}
+.me-grade small{color:var(--mist);font-weight:700;letter-spacing:.12em}
+.board-wrap{overflow-x:auto;border:1px solid rgba(228,238,240,.08);border-radius:14px;background:rgba(9,17,21,.6)}
+table.board{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums;min-width:820px}
+.board th{font-weight:600;color:var(--mist);text-align:left;padding:10px 12px;font-size:12px;border-bottom:1px solid rgba(228,238,240,.08);white-space:nowrap}
+.board td{padding:8px 12px;border-bottom:1px solid rgba(228,238,240,.05);vertical-align:middle}
+.board tr.team-row td{font-family:var(--font-display);font-weight:800;font-size:14px;padding-top:12px}
+.board tr.team-row.a td{color:var(--tide)}
+.board tr.team-row.b td{color:var(--blood)}
+.board tr.p.a td:first-child{box-shadow:inset 3px 0 0 var(--tide)}
+.board tr.p.b td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
+.board tr.me td{background:rgba(214,178,106,.08)}
+.who-cell{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.badge{font-size:10.5px;font-weight:800;padding:1px 7px;border-radius:999px;background:var(--foil);color:#1b1407;letter-spacing:.04em}
+.badge.ace{background:#b9c5cc}
+.augs-cell{display:flex;gap:3px}
+.bar{height:5px;width:110px;background:rgba(228,238,240,.08);border-radius:3px;overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--tide)}
+tr.b .bar i{background:var(--blood)}
+.g{font-family:var(--font-display);font-weight:900;font-size:16px}
+.g.top{color:var(--foil)}
+.fights{margin:18px 0 0;border:1px solid rgba(228,238,240,.08);border-radius:14px;background:rgba(9,17,21,.6);padding:4px 16px}
+.fights summary{cursor:pointer;padding:10px 0;font-weight:600}
+.fights ol{margin:0 0 14px;padding-left:20px;display:grid;gap:6px;font-size:14px;color:#c3d2d5;font-variant-numeric:tabular-nums}
+.actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:26px}
+.copy-note{text-align:center;color:var(--mist);font-size:13px;min-height:1.6em;margin:10px 0 0}
+.copy-box{display:block;width:100%;max-width:560px;margin:8px auto 0;min-height:120px;background:#0b1519;color:var(--frost);border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;font-size:13px}
+
+/* 데이터 창 */
+.modal{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:16px;background:rgba(3,7,9,.72);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.modal[hidden]{display:none}
+.modal-card{width:min(940px,100%);max-height:min(90vh,920px);display:flex;flex-direction:column;background:#0d191e;border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 80px -20px #000}
+.modal-head{flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(228,238,240,.08)}
+.modal-head h2{font-family:var(--font-display);font-weight:800;font-size:22px;margin:0}
+.tabs{flex:none;display:flex;gap:4px;padding:8px 14px 0;border-bottom:1px solid rgba(228,238,240,.06);overflow-x:auto}
+.tab{padding:8px 14px;border:0;background:none;color:var(--mist);border-bottom:2px solid transparent;font-weight:600;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--frost);border-color:var(--foil)}
+.modal-body{padding:18px 20px 26px;overflow:auto}
+.data-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.tile{padding:12px 14px;border-radius:12px;background:rgba(23,42,49,.62);border:1px solid rgba(228,238,240,.08);font-size:13px;color:var(--mist)}
+.tile b{display:block;font-family:var(--font-display);font-weight:800;font-size:26px;color:var(--frost);line-height:1.2}
+.src{display:inline-block;font-size:11.5px;font-weight:700;color:var(--foil);margin-bottom:4px}
+.drop{display:grid;justify-items:center;gap:8px;border:1.5px dashed rgba(214,178,106,.5);border-radius:14px;padding:22px;text-align:center;color:var(--mist);cursor:pointer;font-size:13.5px}
+.drop b{color:var(--frost);font-size:15px}
+.drop.over{background:rgba(214,178,106,.08)}
+.notes,.warns{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:6px;font-size:13px}
+.notes li{padding:7px 12px;border-radius:8px;background:rgba(111,184,198,.1);border-left:3px solid var(--tide)}
+.warns li{padding:7px 12px;border-radius:8px;background:rgba(212,107,92,.1);border-left:3px solid var(--blood)}
+.warns li span{color:var(--mist);margin-right:6px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+.guide h3{font-family:var(--font-display);font-weight:800;font-size:19px;margin:22px 0 6px}
+.guide h3:first-child{margin-top:0}
+.guide p{margin:6px 0;color:#c3d2d5;max-width:62em}
+.guide .tbl{overflow-x:auto}
+.guide table,.bal table{width:100%;border-collapse:collapse;font-size:13.5px;margin:8px 0 14px}
+.guide th,.guide td,.bal th,.bal td{text-align:left;padding:7px 10px;border-bottom:1px solid rgba(228,238,240,.07);vertical-align:top}
+.guide th,.bal th{color:var(--mist);font-weight:600;font-size:12px;white-space:nowrap}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:rgba(228,238,240,.08);padding:1px 6px;border-radius:5px;white-space:nowrap}
+.bal-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}
+.bal h3{font-family:var(--font-display);font-weight:800;font-size:17px;margin:18px 0 4px}
+.progress{height:8px;border-radius:4px;background:rgba(228,238,240,.08);overflow:hidden;margin:12px 0}
+.progress i{display:block;height:100%;width:0;background:var(--foil);transition:width .15s}
+.wr{display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}
+.wr .bar{width:90px;margin:0;position:relative}
+.wr .bar::after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:rgba(228,238,240,.4)}
+.pill{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.pill.hot{background:rgba(212,107,92,.2);color:#f2a99c}
+.pill.cold{background:rgba(111,184,198,.18);color:#a3d8e2}
+.disclaimer{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:22px 20px 34px;color:#6d848a;font-size:12px;line-height:1.75;border-top:1px solid rgba(228,238,240,.06)}
+.disclaimer b{color:#93a9ae}
+
+@media (max-width:860px){
+  .title-screen{grid-template-columns:1fr;padding-top:30px;gap:10px}
+  .showcase{height:330px}
+  .showcase .aug-card{width:190px;min-height:260px}
+  .champ-reveal{grid-template-columns:1fr;gap:20px}
+  .ally-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .team-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .me-card{grid-template-columns:auto 1fr}
+  .me-grade{grid-column:1/-1;grid-auto-flow:column;justify-content:start;align-items:baseline;gap:10px}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .data-tiles,.bal-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .score-names{gap:60px}
+}
+@media (max-width:480px){
+  .topbar{padding:10px 14px}
+  .shell{padding:0 16px 28px}
+  .fan-tag{font-size:11px}
+  .record{display:none}
+  .showcase .aug-card{width:156px;min-height:230px;padding:16px 14px}
+  .showcase .aug-card h3{font-size:18px}
+  .team-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .portrait.xl{width:160px;height:192px;font-size:80px}
+  .tower-row{grid-template-columns:56px repeat(6,1fr)}
+}
+@media (hover:none){.hint,.btn kbd{display:none}}
+@media (max-width:480px){.tf-inner{padding:12px 8px 10px}.tb-mark{font-size:11px}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<canvas id="wind" aria-hidden="true"></canvas>
+<header class="topbar">
+  <div class="brand">
+    <button class="logo" data-action="home" aria-label="메롤 처음 화면으로">메롤</button>
+    <span class="fan-tag">리그 오브 레전드 팬게임</span>
+  </div>
+  <div class="top-actions">
+    <span class="record" id="record"></span>
+    <button class="btn small" id="btn-data" data-action="open-data">데이터 · 밸런스</button>
+  </div>
+</header>
+<main class="shell" id="stage"></main>
+<footer class="disclaimer">
+  <b>메롤</b>은 리그 오브 레전드를 좋아하는 사람이 만든 비공식 팬게임입니다. 등장하는 챔피언과 증강, 타로 카드, 그림은 모두 이 게임만의 창작물입니다.<br>
+  메롤은 Riot Games의 보증을 받지 않았으며, Riot Games 또는 Riot Games IP의 제작·관리에 공식적으로 관여한 누구의 견해나 의견도 반영하지 않습니다. Riot Games 및 관련 모든 자산은 Riot Games, Inc.의 상표 또는 등록 상표입니다.
+</footer>
+<div class="modal" id="modal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-head"><h2 id="modal-title">데이터 · 밸런스</h2><button class="btn small" id="modal-close" data-action="close-modal">닫기</button></div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-load" data-action="tab" data-tab="load">불러오기</button>
+      <button class="tab" role="tab" id="tab-guide" data-action="tab" data-tab="guide">작성 안내</button>
+      <button class="tab" role="tab" id="tab-balance" data-action="tab" data-tab="balance">밸런스 측정</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+<input type="file" id="file-input" multiple accept=".csv,.tsv,.txt,image/*" hidden>
+
+<script type="text/csv" id="csv-champions">
+id,이름,칭호,역할,피해유형,스킬,설명,체력,공격력,주문력,방어력,마법저항력,공격속도,치명타,그림
+tundra,툰드라,얼어붙은 성벽,탱커,,빙벽 강타,다리 끝을 막아서는 거대한 얼음 문지기.,3300,,,70,55,,,
+karsel,카르셀,쇠사슬 간수,탱커,,족쇄 던지기,도망치는 적을 끝까지 끌어오는 간수.,,,,,,,,
+mor,모르,심연의 거북,탱커,,등껍질 회전,느리지만 무엇에도 쓰러지지 않는다.,2800,90,,100,85,,,
+bran,브란,눈보라 도끼,전사,,회오리 도끼,한타 한가운데로 뛰어드는 도끼잡이.,2900,180,,,,,,
+renka,렌카,붉은 서약,전사,,서약의 일격,맞을수록 더 날카로워지는 기사.,,,,,,,,
+kairn,카이른,다리 위의 결투가,전사,,결투 신청,한 명만 골라 끝까지 쫓는다.,2500,205,,60,,0.85,,
+sia,시아,그림자 매듭,암살자,,매듭 끊기,뒷줄을 노리는 그림자.,,,,,,,,
+bello,벨로,새벽 칼날,암살자,마법,새벽 섬광,마법 칼날로 뒷줄을 지운다.,,,,,,,,
+aste,아스테,별을 꿰는 자,마법사,,유성 꿰기,별을 실로 꿰어 떨어뜨린다.,1650,,300,,,,,
+miru,미루,잿빛 점술가,마법사,,잿빛 예언,카드 점으로 적의 약점을 읽는다.,,,,,,,,
+seri,세리,번개 우산,마법사,,낙뢰,우산 끝으로 번개를 부른다.,,,265,,,0.8,,
+hail,하일,얼음 사수,원딜,,서리 화살,멀리서 꾸준히 얼음 화살을 쏜다.,,180,,,,0.98,15,
+tike,티케,황동 총잡이,원딜,,황동 연발,치명타 한 방에 모든 걸 건다.,,195,,,,0.8,32,
+roa,로아,등불지기,서포터,,등불 축복,쓰러지는 아군에게 빛을 비춘다.,,,,,,,,
+peli,펠리,노래하는 종,서포터,,종소리,종을 울려 아군을 치유한다.,1950,,185,,,,,
+</script>
+<script type="text/csv" id="csv-augments">
+id,이름,등급,설명,효과,추천,풀,그림
+s_blade,날 선 칼끝,실버,공격력이 25 오릅니다.,공격력+25,,,
+s_coat,두꺼운 외투,실버,방어력이 30 오릅니다.,방어력+30,,,
+s_hat,털모자,실버,마법저항력이 30 오릅니다.,마법저항력+30,,,
+s_soup,따뜻한 수프,실버,최대 체력이 12% 오릅니다.,체력+12%,,,
+s_hands,빠른 손놀림,실버,공격 속도가 15% 오릅니다.,공격속도+15%,,,
+s_ember,작은 불씨,실버,주문력이 35 오릅니다.,주문력+35,,,
+s_practice,연습한 주문,실버,스킬 가속이 20 오릅니다.,스킬가속+20,,,
+s_eye,뾰족한 눈,실버,치명타 확률이 12% 오릅니다.,치명타+12,,,
+s_taste,피맛,실버,가한 피해의 8%만큼 체력을 회복합니다.,흡혈+8,,,
+s_frostmail,얼음 갑주,실버,한타가 시작될 때 최대 체력 12%의 보호막을 얻습니다.,보호막+12%,,,
+s_breath,깊은 숨,실버,매초 최대 체력의 1.2%를 회복합니다.,재생+1.2,,,
+s_cheer,응원단,실버,"우리 팀 전원의 공격력이 8, 주문력이 12 오릅니다.",팀:공격력+8; 팀:주문력+12,,,
+s_charm,낡은 부적,실버,받는 피해가 6% 줄어듭니다.,피해감소+6,,,
+s_trick,잔꾀,실버,상대 팀 전원의 방어력과 마법저항력이 8 내려갑니다.,적:방어력-8; 적:마법저항력-8,,,
+s_snowball,눈뭉치,실버,"처치에 관여할 때마다 공격력 4, 주문력 6이 쌓입니다.",처치당:공격력+4; 처치당:주문력+6,,,
+g_heart,거인의 심장,골드,최대 체력 25%와 방어력 10을 얻습니다.,체력+25%; 방어력+10,,,
+g_berserk,광전사,골드,공격 속도 30%와 흡혈 5%를 얻습니다.,공격속도+30%; 흡혈+5,,,
+g_sniper,저격수의 눈,골드,"치명타 확률 20%, 치명타 피해 15%를 얻습니다.",치명타+20; 치명타피해+15,원딜,,
+g_overload,마력 과부하,골드,주문력이 30% 오르고 스킬 가속 15를 얻습니다.,주문력+30%; 스킬가속+15,,,
+g_executioner,처형인,골드,체력이 10% 이하인 적을 즉시 처치합니다.,처형+10,,,
+g_thorns,가시 갑옷,골드,받은 피해의 25%를 되돌려주고 방어력 20을 얻습니다.,반사+25; 방어력+20,탱커,,
+g_echo,메아리,골드,스킬이 주변 적 2명에게 35% 피해로 퍼집니다.,광역+35,,,
+g_frosthand,얼어붙은 손,골드,스킬이 적을 0.6초 기절시킵니다.,기절+0.6,,,
+g_growth,성장통,골드,한타를 치를 때마다 체력·공격력·주문력이 4%씩 쌓입니다.,한타당:체력+4%; 한타당:공격력+4%; 한타당:주문력+4%,,,
+g_precision,정밀 타격,골드,적 방어력과 마법저항력의 25%를 무시합니다.,방어관통+25,,,
+g_blessing,축복의 손길,골드,회복량이 35% 늘고 우리 팀 전원이 체력 6%의 보호막을 얻습니다.,회복증가+35; 팀:보호막+6%,서포터/탱커,,
+g_momentum,기세,골드,주는 피해가 12% 늘어납니다.,피해증가+12,,,
+g_vampire,흡혈귀,골드,가한 피해의 18%만큼 체력을 회복합니다.,흡혈+18,,,
+g_comrades,전우애,골드,우리 팀 전원의 받는 피해가 5% 줄어듭니다.,팀:피해감소+5,,,
+p_secondwind,두 번째 숨결,프리즘,한타마다 한 번 쓰러져도 체력 40%로 되살아납니다. 최대 체력 10%도 얻습니다.,부활+1; 체력+10%,,,
+p_godshot,신의 사격,프리즘,"공격 속도 30%, 치명타 확률 20%를 얻습니다.",공격속도+30%; 치명타+20,원딜,,
+p_meteor,별똥별,프리즘,주문력이 45% 오르고 스킬이 주변 적에게 25% 더 퍼집니다.,주문력+45%; 광역+25,마법사,,
+p_bastion,무적의 성벽,프리즘,최대 체력 40%를 얻고 받는 피해가 15% 줄어듭니다.,체력+40%; 피해감소+15,,,
+p_slayer,학살자,프리즘,처치에 관여할 때마다 공격력 6·주문력 9가 쌓이고 체력 6% 이하인 적을 처형합니다.,처치당:공격력+6; 처치당:주문력+9; 처형+6,,,
+p_youth,영원한 젊음,프리즘,"흡혈 20%, 매초 최대 체력 2% 회복을 얻습니다.",흡혈+20; 재생+2,,,
+p_timewarp,시간 왜곡,프리즘,스킬 가속 60을 얻습니다.,스킬가속+60,,,
+p_banner,군단의 깃발,프리즘,우리 팀 전원이 공격력 12·주문력 16·최대 체력 6%를 얻습니다.,팀:공격력+12; 팀:주문력+16; 팀:체력+6%,,,
+p_mirror,거울 갑주,프리즘,받은 피해의 45%를 되돌려주고 방어력과 마법저항력 15를 얻습니다.,반사+45; 방어력+15; 마법저항력+15,탱커,,
+p_frostlord,서리 군주,프리즘,스킬이 1.2초 기절시키고 주변 적에게 30% 퍼집니다. 최대 체력 15%도 얻습니다.,기절+1.2; 광역+30; 체력+15%,,,
+x_encore,앙코르,프리즘,한타를 치를 때마다 주는 피해가 6%씩 쌓입니다.,한타당:피해증가+6,,별빛 무대,
+x_lightstick,응원봉,실버,우리 팀 전원의 공격 속도가 10% 오릅니다.,팀:공격속도+10%,,별빛 무대,
+x_backup,백댄서,골드,우리 팀 전원이 주는 피해가 6% 늘어납니다.,팀:피해증가+6,,별빛 무대,
+x_spotlight,스포트라이트,골드,처치에 관여할 때마다 받는 피해가 2%씩 줄어듭니다.,처치당:피해감소+2,,별빛 무대,
+</script>
+<script type="text/csv" id="csv-tarot">
+id,번호,이름,방향,설명,효과,확률,그림
+fool,0,바보,정,무모한 출발. 리롤이 2번 더 생기지만 프리즘 증강은 덜 나옵니다.,리롤+2; 프리즘확률-10,1,
+magician,I,마법사,정,프리즘 증강이 훨씬 자주 나옵니다.,프리즘확률+25,1,
+magician_r,I,마법사,역,리롤을 할 수 없는 대신 실버 증강이 나오지 않습니다.,리롤=0; 실버확률=0,0.6,
+lovers,VI,연인,정,모든 챔피언이 흡혈 10%를 얻습니다.,전체:흡혈+10,1,
+wheel,X,운명의 수레바퀴,정,증강 선택지가 4장이 되지만 리롤은 할 수 없습니다.,선택지+1; 리롤=0,1,
+death,XIII,죽음,정,모든 챔피언이 체력 12% 이하인 적을 처형하고 최대 체력이 10% 줄어듭니다.,전체:처형+12; 전체:체력-10%,1,
+tower,XVI,탑,정,모두가 더 세게 때리고 더 아프게 맞습니다.,전체:공격력+25%; 전체:주문력+25%; 전체:방어력-20%; 전체:마법저항력-20%,1,
+star,XVII,별,정,별빛 무대가 열립니다. 증강을 한 번 더 고르고 무대 증강이 등장합니다.,증강횟수+1; 증강풀=별빛 무대,1,
+sun,XIX,태양,정,우리 팀이 주는 피해가 5% 늘어납니다.,우리팀:피해증가+5,1,
+sun_r,XIX,태양,역,상대 팀이 주는 피해가 5% 늘어납니다.,상대팀:피해증가+5,0.8,
+world,XXI,세계,정,마지막 증강은 프리즘으로 확정됩니다.,마지막등급=프리즘,1,
+</script>
+
+<script>
+/*ENGINE_START*/
+const Engine = (() => {
+  'use strict';
+
+  // ───────── 기본 규칙 ─────────
+  const TIERS = ['실버', '골드', '프리즘'];
+  const TIER_KEY = { 실버: 'silver', 골드: 'gold', 프리즘: 'prism' };
+  const ROLES = ['탱커', '전사', '암살자', '마법사', '원딜', '서포터'];
+  const ROLE_KEY = { 탱커: 'tank', 전사: 'fighter', 암살자: 'assassin', 마법사: 'mage', 원딜: 'marksman', 서포터: 'support' };
+  const FRONT = new Set(['탱커', '전사']);
+  const MELEE = new Set(['탱커', '전사', '암살자']);
+  const DEFAULT_RULES = { picks: 3, rerolls: 1, choices: 3, weights: { 실버: 40, 골드: 40, 프리즘: 20 } };
+
+  // 역할군 기본 능력치 (CSV에서 비운 칸은 여기서 채움)
+  const ROLE_BASE = {
+    탱커:   { hp: 2900, ad: 105, ap: 45,  armor: 80, mr: 65, as: 0.70, crit: 0 },
+    전사:   { hp: 2650, ad: 195, ap: 0,   armor: 70, mr: 55, as: 0.80, crit: 0 },
+    암살자: { hp: 1800, ad: 165, ap: 0,   armor: 42, mr: 38, as: 0.75, crit: 10 },
+    마법사: { hp: 1800, ad: 60,  ap: 275, armor: 36, mr: 45, as: 0.60, crit: 0 },
+    원딜:   { hp: 1800, ad: 180, ap: 0,   armor: 35, mr: 35, as: 0.90, crit: 20 },
+    서포터: { hp: 2100, ad: 70,  ap: 160, armor: 52, mr: 55, as: 0.65, crit: 0 },
+  };
+  const ROLE_DMG = { 탱커: 'magic', 전사: 'phys', 암살자: 'phys', 마법사: 'magic', 원딜: 'phys', 서포터: 'magic' };
+  // 스킬: base + ratio × (물리면 공격력, 마법이면 주문력)
+  const ROLE_SKILL = {
+    탱커:   { kind: 'strike', cd: 8,   base: 120, ratio: 0.5,  hpR: 0.04, stun: 1.0 },
+    전사:   { kind: 'strike', cd: 7,   base: 160, ratio: 0.9,  drain: 0.35 },
+    암살자: { kind: 'strike', cd: 6,   base: 255, ratio: 1.1 },
+    마법사: { kind: 'strike', cd: 5.5, base: 270, ratio: 1.0,  splash: 40 },
+    원딜:   { kind: 'strike', cd: 8,   base: 140, ratio: 0.7,  canCrit: true },
+    서포터: { kind: 'heal',   cd: 6,   base: 210, ratio: 0.9 },
+  };
+  const SKILL_TEXT = {
+    탱커: '적을 내려쳐 최대 체력에 비례한 피해를 주고 1초 기절시킵니다.',
+    전사: '강하게 베고 준 피해의 35%만큼 회복합니다.',
+    암살자: '뒷줄의 약한 적에게 파고들어 큰 피해를 줍니다.',
+    마법사: '체력이 낮은 적을 노려 마법 피해를 주고, 주변 적 2명에게 40%가 퍼집니다.',
+    원딜: '치명타가 터질 수 있는 강한 한 발을 쏩니다.',
+    서포터: '체력이 가장 낮은 아군을 치유하고 적에게 약한 피해를 줍니다.',
+  };
+  const SIM = {
+    dt: 0.25, maxFight: 45, firstFight: 75, gapMin: 70, gapMax: 120,
+    growth: 0.06, resGrowth: 3, goldPer1000: 0.03, goldCap: 0.25, defender: 4,
+    killGold: 300, assistGold: 150, startGold: 1400, passiveGold: 2.4,
+    reviveHp: 0.4, assistWindow: 10, maxFights: 16,
+  };
+  const STRUCTURES = ['외곽 포탑', '내부 포탑', '억제기 포탑', '억제기', '쌍둥이 포탑', '넥서스'];
+
+  // ───────── 글자 정리 ─────────
+  const norm = s => String(s ?? '').replace(/\s+/g, '').toLowerCase();
+  const HEADER_ALIASES = {
+    id: ['id', '아이디', '코드', '키'],
+    name: ['name', '이름', '명칭'],
+    title: ['title', '칭호', '별명'],
+    role: ['role', '역할', '역할군', '포지션'],
+    dmgType: ['damagetype', 'dmgtype', '피해유형', '딜타입', '공격유형'],
+    skill: ['skill', '스킬', '스킬이름'],
+    desc: ['desc', 'description', '설명'],
+    hp: ['hp', '체력'], ad: ['ad', '공격력'], ap: ['ap', '주문력'], armor: ['armor', '방어력'],
+    mr: ['mr', '마법저항력', '마저'], as: ['as', '공격속도', '공속'], crit: ['crit', '치명타', '치명타확률'],
+    img: ['img', 'image', '그림', '이미지', '그림파일'],
+    tier: ['tier', '등급', '희귀도'],
+    effect: ['effect', '효과'],
+    roles: ['roles', '추천', '추천역할'],
+    pool: ['pool', '풀', '증강풀', '이벤트'],
+    numeral: ['numeral', '번호', '숫자'],
+    dir: ['dir', 'direction', '방향', '정역'],
+    weight: ['weight', '확률', '가중치', '빈도'],
+  };
+  const HEADER = {};
+  for (const [k, list] of Object.entries(HEADER_ALIASES)) for (const a of list) HEADER[norm(a)] = k;
+
+  const ROLE_ALIASES = {
+    탱커: '탱커', 탱: '탱커', 탱크: '탱커', tank: '탱커',
+    전사: '전사', 브루저: '전사', 파이터: '전사', fighter: '전사', bruiser: '전사',
+    암살자: '암살자', 어쌔신: '암살자', 암살: '암살자', assassin: '암살자',
+    마법사: '마법사', 메이지: '마법사', 법사: '마법사', mage: '마법사',
+    원딜: '원딜', 원거리: '원딜', 원거리딜러: '원딜', 명사수: '원딜', marksman: '원딜', adc: '원딜',
+    서포터: '서포터', 서폿: '서포터', 서포트: '서포터', 지원: '서포터', support: '서포터',
+  };
+  const normRole = v => ROLE_ALIASES[norm(v)] || null;
+  function normTier(v) {
+    const n = norm(v);
+    if (['실버', 'silver', '은', '일반'].includes(n)) return '실버';
+    if (['골드', 'gold', '금'].includes(n)) return '골드';
+    if (['프리즘', 'prism', 'prismatic', '프리즈마틱', '무지개'].includes(n)) return '프리즘';
+    return null;
+  }
+  function normDmg(v) {
+    const n = norm(v);
+    if (['물리', '물리피해', 'ad', 'phys', 'physical'].includes(n)) return 'phys';
+    if (['마법', '마법피해', 'ap', 'magic'].includes(n)) return 'magic';
+    return null;
+  }
+  const normDir = v => (['역', '역방향', 'reversed', 'reverse', 'r', '거꾸로'].includes(norm(v)) ? '역' : '정');
+  function parseNum(v) {
+    if (v == null) return null;
+    const s = String(v).replace(/[,%\s]/g, '');
+    if (s === '') return null;
+    const n = Number(s);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  // ───────── CSV ─────────
+  function decode(buf) {
+    const bytes = new Uint8Array(buf);
+    try { return new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
+    catch (e) {
+      try { return new TextDecoder('euc-kr').decode(bytes); }
+      catch (e2) { return new TextDecoder('utf-8').decode(bytes); }
+    }
+  }
+  function parseCSV(text) {
+    text = String(text ?? '').replace(/^﻿/, '');
+    const first = text.split(/\r?\n/, 1)[0] || '';
+    const delim = first.includes('\t') && !first.includes(',') ? '\t' : ',';
+    const rows = []; let row = []; let field = ''; let q = false;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (q) {
+        if (ch === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else q = false; }
+        else field += ch;
+      } else if (ch === '"') q = true;
+      else if (ch === delim) { row.push(field); field = ''; }
+      else if (ch === '\n' || ch === '\r') {
+        if (ch === '\r' && text[i + 1] === '\n') i++;
+        row.push(field); rows.push(row); row = []; field = '';
+      } else field += ch;
+    }
+    if (field !== '' || row.length) { row.push(field); rows.push(row); }
+    return rows.filter(r => r.some(c => String(c).trim() !== ''));
+  }
+  function headerKeys(text) {
+    const rows = parseCSV(text);
+    return rows.length ? rows[0].map(h => HEADER[norm(h)] || null) : [];
+  }
+  function detectKind(text) {
+    const keys = headerKeys(text);
+    if (keys.includes('tier')) return 'augments';
+    if (keys.includes('role')) return 'champions';
+    if (keys.includes('dir') || keys.includes('numeral') || (keys.includes('effect') && keys.includes('weight'))) return 'tarot';
+    return null;
+  }
+  function toObjects(text) {
+    const rows = parseCSV(text);
+    if (!rows.length) return [];
+    const head = rows[0].map(h => HEADER[norm(h)] || null);
+    return rows.slice(1).map(r => {
+      const o = {};
+      head.forEach((k, i) => { if (k && o[k] == null) o[k] = String(r[i] ?? '').trim(); });
+      return o;
+    });
+  }
+
+  // ───────── 효과 문법 ─────────
+  const STAT_ALIAS = {
+    체력: 'hp', 최대체력: 'hp', hp: 'hp', 공격력: 'ad', ad: 'ad', 주문력: 'ap', ap: 'ap',
+    방어력: 'armor', armor: 'armor', 마법저항력: 'mr', 마저: 'mr', mr: 'mr',
+    공격속도: 'as', 공속: 'as', as: 'as', 치명타: 'crit', 치명타확률: 'crit', crit: 'crit',
+    치명타피해: 'critDmg', 흡혈: 'vamp', 생명력흡수: 'vamp', 스킬가속: 'haste', 가속: 'haste',
+    피해증가: 'amp', 주는피해: 'amp', 피해감소: 'red', 받는피해감소: 'red', 회복증가: 'healAmp', 회복량: 'healAmp',
+    방어관통: 'pen', 관통: 'pen', 보호막: 'shield', 쉴드: 'shield', 재생: 'regen', 체력재생: 'regen',
+    부활: 'revive', 처형: 'execute', 반사: 'thorns', 가시: 'thorns', 광역: 'splash', 기절: 'stunB',
+  };
+  const RULE_ALIAS = {
+    증강횟수: 'picks', 증강수: 'picks', 리롤: 'rerolls', 리롤횟수: 'rerolls', 선택지: 'choices', 선택지수: 'choices',
+    실버확률: 'w_실버', 골드확률: 'w_골드', 프리즘확률: 'w_프리즘', 등급고정: 'tierLock', 증강풀: 'pool', 마지막등급: 'lastTier',
+  };
+  const SCOPE_ALIAS = {
+    나: '나', 자신: '나', 본인: '나', 팀: '팀', 아군: '팀', 우리팀: '우리팀', 적: '적', 상대: '적',
+    상대팀: '상대팀', 적팀: '상대팀', 전체: '전체', 모두: '전체', 처치당: '처치당', 킬당: '처치당', 한타당: '한타당',
+  };
+  const STAT_LABEL = {
+    hp: '최대 체력', ad: '공격력', ap: '주문력', armor: '방어력', mr: '마법저항력', as: '공격 속도',
+    crit: '치명타 확률', critDmg: '치명타 피해', vamp: '흡혈', haste: '스킬 가속', amp: '주는 피해',
+    red: '받는 피해 감소', healAmp: '회복량', pen: '방어 관통', shield: '보호막', regen: '초당 회복',
+    revive: '부활', execute: '처형', thorns: '피해 반사', splash: '스킬 광역', stunB: '기절',
+  };
+  const PCT_STATS = new Set(['crit', 'critDmg', 'vamp', 'amp', 'red', 'healAmp', 'pen']);
+  const BASE_KIND = new Set(['hp', 'ad', 'ap', 'armor', 'mr', 'as']);
+  const SCOPE_LABEL = { 나: '', 팀: '우리 팀 ', 우리팀: '우리 팀 ', 적: '상대 팀 ', 상대팀: '상대 팀 ', 전체: '모든 챔피언 ', 처치당: '처치 관여마다 ', 한타당: '한타마다 ' };
+
+  function parseEffects(str) {
+    const tokens = [], errors = [];
+    for (const raw of String(str ?? '').split(/[;\n\r；]+/)) {
+      const t = raw.replace(/\s+/g, '');
+      if (!t) continue;
+      const mm = t.match(/^(?:([^:：]+)[:：])?([^+\-=]+)([+\-=])(.+)$/);
+      if (!mm) { errors.push(raw.trim()); continue; }
+      const [, scopeRaw, keyRaw, op] = mm;
+      let valRaw = mm[4];
+      let scope = null;
+      if (scopeRaw) { scope = SCOPE_ALIAS[scopeRaw]; if (!scope) { errors.push(raw.trim()); continue; } }
+      let pct = false;
+      if (/%$/.test(valRaw)) { pct = true; valRaw = valRaw.slice(0, -1); }
+      const num = Number(valRaw);
+      const tok = { scope, op, pct, raw: raw.trim() };
+      const lk = keyRaw.toLowerCase();
+      if (STAT_ALIAS[lk]) {
+        if (!Number.isFinite(num)) { errors.push(raw.trim()); continue; }
+        tok.stat = STAT_ALIAS[lk]; tok.value = num;
+      } else if (RULE_ALIAS[lk] || /^\d+번째등급$/.test(keyRaw)) {
+        const rk = RULE_ALIAS[lk] || 'nthTier';
+        tok.rule = rk;
+        if (rk === 'nthTier') tok.n = parseInt(keyRaw, 10);
+        if (rk === 'tierLock' || rk === 'lastTier' || rk === 'nthTier') {
+          const tier = normTier(valRaw);
+          if (!tier) { errors.push(raw.trim()); continue; }
+          tok.value = tier;
+        } else if (rk === 'pool') {
+          tok.value = norm(valRaw);
+          tok.label = String(raw.split(/[=]/).slice(1).join('=')).trim() || valRaw;
+        } else {
+          if (!Number.isFinite(num)) { errors.push(raw.trim()); continue; }
+          tok.value = num;
+        }
+      } else { errors.push(raw.trim()); continue; }
+      tokens.push(tok);
+    }
+    return { tokens, errors };
+  }
+
+  const sgn = op => (op === '-' ? '−' : op === '=' ? '= ' : '+');
+  function describeToken(t, ctx) {
+    if (t.rule) return describeRule(t);
+    const sc = SCOPE_LABEL[t.scope || (ctx === 'tarot' ? '전체' : '나')] || '';
+    const v = t.value;
+    switch (t.stat) {
+      case 'shield': return `${sc}한타 시작 보호막 ${sgn(t.op)}${t.pct ? `최대 체력의 ${v}%` : v}`;
+      case 'execute': return `${sc}체력 ${v}% 이하인 적 처형`;
+      case 'revive': return `${sc}한타마다 부활 ${sgn(t.op)}${v}회`;
+      case 'stunB': return `${sc}스킬 기절 ${sgn(t.op)}${v}초`;
+      case 'splash': return `${sc}스킬 광역 피해 ${sgn(t.op)}${v}%`;
+      case 'regen': return `${sc}초당 최대 체력 ${sgn(t.op)}${v}% 회복`;
+      case 'thorns': return `${sc}받은 피해 ${v}% 반사`;
+      default: {
+        const unit = PCT_STATS.has(t.stat) || t.pct ? '%' : '';
+        return `${sc}${STAT_LABEL[t.stat]} ${sgn(t.op)}${v}${unit}`;
+      }
+    }
+  }
+  function describeRule(t) {
+    const v = t.value;
+    const sc = { 우리팀: '우리 팀 ', 팀: '우리 팀 ', 상대팀: '상대 팀 ', 적: '상대 팀 ', 나: '내 ' }[t.scope] || '';
+    switch (t.rule) {
+      case 'picks': return `${sc}증강 선택 ${t.op === '=' ? `${v}번` : `${sgn(t.op)}${v}번`}`;
+      case 'rerolls': return t.op === '=' ? (v === 0 ? '리롤 불가' : `리롤 ${v}번`) : `리롤 ${sgn(t.op)}${v}번`;
+      case 'choices': return t.op === '=' ? `선택지 ${v}장` : `선택지 ${sgn(t.op)}${v}장`;
+      case 'w_실버': case 'w_골드': case 'w_프리즘': {
+        const tier = t.rule.slice(2);
+        return t.op === '=' ? (v === 0 ? `${tier} 증강 안 나옴` : `${tier} 확률 ${v}`) : `${tier} 확률 ${sgn(t.op)}${v}`;
+      }
+      case 'tierLock': return `모든 증강 ${v}`;
+      case 'lastTier': return `마지막 증강 ${v} 확정`;
+      case 'nthTier': return `${t.n}번째 증강 ${v} 확정`;
+      case 'pool': return `'${t.label || v}' 증강 등장`;
+      default: return t.raw;
+    }
+  }
+  const describeTokens = (tokens, ctx) => tokens.map(t => describeToken(t, ctx)).join(', ');
+
+  // ───────── 데이터 만들기 ─────────
+  function defaultBase(role, dmgType) {
+    const b = { ...ROLE_BASE[role] };
+    if (dmgType !== ROLE_DMG[role]) {
+      if (dmgType === 'magic') { b.ap = Math.round(Math.max(b.ad, 150) * 1.6); b.ad = Math.round(b.ad * 0.65); }
+      else { b.ad = Math.round(Math.max(b.ap, 150) * 0.8); b.ap = 0; }
+    }
+    return b;
+  }
+  function buildData(raw) {
+    const warnings = [];
+    const warn = (where, msg) => warnings.push({ where, msg });
+    const uniq = (seen, id, idx, prefix, where) => {
+      let out = id || `${prefix}${idx + 1}`;
+      if (seen.has(out)) { const nid = `${out}_${idx + 1}`; warn(where, `아이디 '${out}'가 겹쳐서 ${idx + 2}번째 줄은 '${nid}'로 바꿨어요.`); out = nid; }
+      seen.add(out);
+      return out;
+    };
+
+    const champions = [];
+    let seen = new Set();
+    toObjects(raw.champions).forEach((o, idx) => {
+      const name = o.name || '';
+      if (!name) return;
+      const id = uniq(seen, o.id, idx, 'c', '캐릭터');
+      let role = normRole(o.role);
+      if (!role) { warn('캐릭터', `${name}: 역할 '${o.role || ''}'을(를) 몰라서 전사로 넣었어요.`); role = '전사'; }
+      const dmgType = normDmg(o.dmgType) || ROLE_DMG[role];
+      const def = defaultBase(role, dmgType);
+      const base = {}; let custom = 0;
+      for (const k of ['hp', 'ad', 'ap', 'armor', 'mr', 'as', 'crit']) {
+        const v = parseNum(o[k]);
+        if (v == null) base[k] = def[k]; else { base[k] = v; custom++; }
+      }
+      champions.push({ id, name, title: o.title || '', role, dmgType, skill: o.skill || '', desc: o.desc || '', img: o.img || '', base, custom: custom > 0 });
+    });
+
+    const augments = [];
+    seen = new Set();
+    toObjects(raw.augments).forEach((o, idx) => {
+      const name = o.name || '';
+      if (!name) return;
+      const id = uniq(seen, o.id, idx, 'a', '증강');
+      let tier = normTier(o.tier);
+      if (!tier) { warn('증강', `${name}: 등급 '${o.tier || ''}'을(를) 몰라서 실버로 넣었어요.`); tier = '실버'; }
+      const { tokens, errors } = parseEffects(o.effect);
+      errors.forEach(e => warn('증강', `${name}: '${e}'를 이해하지 못해서 뺐어요.`));
+      tokens.filter(t => t.rule).forEach(t => warn('증강', `${name}: '${t.raw}'는 타로 전용 규칙이라 증강에서는 빠져요.`));
+      const stats = tokens.filter(t => t.stat);
+      if (!stats.length) warn('증강', `${name}: 효과가 비어 있어서 골라도 변화가 없어요.`);
+      const roles = String(o.roles || '').split(/[\/\s·|,]+/).map(normRole).filter(Boolean);
+      augments.push({ id, name, tier, desc: o.desc || describeTokens(stats, 'aug'), tokens: stats, roles, pool: norm(o.pool), poolLabel: (o.pool || '').trim(), img: o.img || '' });
+    });
+
+    const tarot = [];
+    seen = new Set();
+    toObjects(raw.tarot).forEach((o, idx) => {
+      const name = o.name || '';
+      if (!name) return;
+      const id = uniq(seen, o.id, idx, 't', '타로');
+      const { tokens, errors } = parseEffects(o.effect);
+      errors.forEach(e => warn('타로', `${name}: '${e}'를 이해하지 못해서 뺐어요.`));
+      let weight = parseNum(o.weight);
+      if (weight == null || weight < 0) weight = 1;
+      tarot.push({ id, name, numeral: o.numeral || '', dir: normDir(o.dir), desc: o.desc || describeTokens(tokens, 'tarot'), tokens, weight, img: o.img || '' });
+    });
+
+    if (champions.length && champions.length < 10) warn('캐릭터', `캐릭터가 ${champions.length}명이라 같은 캐릭터가 겹쳐 나올 수 있어요. 10명 이상이면 겹치지 않아요.`);
+    const tierCount = {};
+    for (const t of TIERS) {
+      tierCount[t] = augments.filter(a => a.tier === t && !a.pool).length;
+      if (augments.length && tierCount[t] < 3) warn('증강', `${t} 증강이 ${tierCount[t]}개뿐이라 선택지가 다른 등급으로 채워질 수 있어요.`);
+    }
+    const pools = new Set(augments.filter(a => a.pool).map(a => a.pool));
+    for (const t of tarot) for (const k of t.tokens) if (k.rule === 'pool' && !pools.has(k.value)) warn('타로', `${t.name}: '${k.label || k.value}' 풀에 들어 있는 증강이 없어요. 증강 표의 풀 칸과 이름을 맞춰 주세요.`);
+
+    const byId = list => Object.fromEntries(list.map(x => [x.id, x]));
+    return { champions, augments, tarot, champById: byId(champions), augById: byId(augments), tarotById: byId(tarot), warnings, tierCount };
+  }
+
+  // ───────── 난수 ─────────
+  function rngFrom(holder, key) {
+    return () => {
+      const a = (holder[key] + 0x6D2B79F5) | 0;
+      holder[key] = a;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function shuffle(arr, R) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  }
+
+  // ───────── 규칙 ─────────
+  function computeRules(tarot) {
+    const r = { setAll: null, addAll: 0, addA: 0, addB: 0, addSelf: 0, rerolls: DEFAULT_RULES.rerolls, choices: DEFAULT_RULES.choices, weights: { ...DEFAULT_RULES.weights }, tierLock: null, lastTier: null, nthTier: {}, pools: [], poolLabels: [] };
+    if (!tarot) return r;
+    for (const t of tarot.tokens) {
+      if (!t.rule) continue;
+      const v = t.value;
+      const add = (cur) => (t.op === '=' ? v : t.op === '-' ? cur - v : cur + v);
+      switch (t.rule) {
+        case 'picks': {
+          const sc = t.scope;
+          if (sc === '우리팀' || sc === '팀') r.addA += t.op === '=' ? v - DEFAULT_RULES.picks : (t.op === '-' ? -v : v);
+          else if (sc === '상대팀' || sc === '적') r.addB += t.op === '=' ? v - DEFAULT_RULES.picks : (t.op === '-' ? -v : v);
+          else if (sc === '나') r.addSelf += t.op === '=' ? v - DEFAULT_RULES.picks : (t.op === '-' ? -v : v);
+          else if (t.op === '=') r.setAll = v;
+          else r.addAll += t.op === '-' ? -v : v;
+          break;
+        }
+        case 'rerolls': r.rerolls = Math.max(0, Math.min(9, Math.round(add(r.rerolls)))); break;
+        case 'choices': r.choices = Math.max(2, Math.min(5, Math.round(add(r.choices)))); break;
+        case 'w_실버': case 'w_골드': case 'w_프리즘': { const k = t.rule.slice(2); r.weights[k] = Math.max(0, add(r.weights[k])); break; }
+        case 'tierLock': r.tierLock = v; break;
+        case 'lastTier': r.lastTier = v; break;
+        case 'nthTier': r.nthTier[t.n] = v; break;
+        case 'pool': if (!r.pools.includes(v)) { r.pools.push(v); r.poolLabels.push(t.label || v); } break;
+      }
+    }
+    return r;
+  }
+  function picksFor(rules, slot) {
+    let n = (rules.setAll ?? DEFAULT_RULES.picks) + rules.addAll + (slot.team === 'A' ? rules.addA : rules.addB) + (slot.isPlayer ? rules.addSelf : 0);
+    return Math.max(1, Math.min(6, Math.round(n)));
+  }
+
+  // ───────── 판 진행 ─────────
+  function drawTarot(data, n, R) {
+    const out = []; const names = new Set();
+    while (out.length < n) {
+      const avail = data.tarot.filter(t => !names.has(t.name) && t.weight > 0);
+      if (!avail.length) break;
+      const tot = avail.reduce((s, t) => s + t.weight, 0);
+      let x = R() * tot; let pick = avail[avail.length - 1];
+      for (const t of avail) { x -= t.weight; if (x < 0) { pick = t; break; } }
+      out.push(pick.id); names.add(pick.name);
+    }
+    return out;
+  }
+  function newMatch(data, seed) {
+    const m = { v: 1, seed: seed >>> 0, rng: seed | 0, tarotChoices: [], tarotPicked: null, tarotId: null, rules: computeRules(null), slots: [], round: 0, offer: null, rerollsLeft: DEFAULT_RULES.rerolls, result: null, recorded: false, champChosen: false };
+    const R = rngFrom(m, 'rng');
+    m.tarotChoices = drawTarot(data, 3, R);
+    let pool = shuffle(data.champions.map(c => c.id), R);
+    while (pool.length < 10 && data.champions.length) pool = pool.concat(shuffle(data.champions.map(c => c.id), R));
+    m.slots = pool.slice(0, 10).map((id, i) => ({ team: i < 5 ? 'A' : 'B', champId: id, isPlayer: i === 0, augIds: [], picks: DEFAULT_RULES.picks }));
+    return m;
+  }
+  function setPlayerChamp(m, data, id) {
+    if (!data.champById[id]) return false;
+    const idx = m.slots.findIndex(s => s.champId === id);
+    if (idx > 0) { m.slots[idx].champId = m.slots[0].champId; m.slots[0].champId = id; }
+    else if (idx < 0) m.slots[0].champId = id;
+    m.champChosen = true;
+    return true;
+  }
+  function chooseTarot(m, data, idx) {
+    m.tarotPicked = idx >= 0 && idx < m.tarotChoices.length ? idx : null;
+    m.tarotId = m.tarotPicked == null ? null : m.tarotChoices[idx];
+    m.rules = computeRules(m.tarotId ? data.tarotById[m.tarotId] : null);
+    m.slots.forEach(s => { s.picks = picksFor(m.rules, s); });
+    m.rerollsLeft = m.rules.rerolls;
+  }
+  function rollTier(rules, round, picks, R) {
+    if (rules.nthTier[round + 1]) return rules.nthTier[round + 1];
+    if (rules.lastTier && round === picks - 1) return rules.lastTier;
+    if (rules.tierLock) return rules.tierLock;
+    const w = rules.weights; const tot = TIERS.reduce((s, t) => s + (w[t] || 0), 0);
+    if (tot <= 0) return '골드';
+    let x = R() * tot;
+    for (const t of TIERS) { x -= w[t] || 0; if (x < 0) return t; }
+    return '프리즘';
+  }
+  function candidates(data, rules, tier, exclude) {
+    return data.augments.filter(a => (!tier || a.tier === tier) && !exclude.has(a.id) && (!a.pool || rules.pools.includes(a.pool)));
+  }
+  function rollOffer(m, data, slotIdx, round, R) {
+    const rules = m.rules; const slot = m.slots[slotIdx];
+    const tier = rollTier(rules, round, slot.picks, R);
+    const exclude = new Set(slot.augIds);
+    const ids = [];
+    if (rules.pools.length) {
+      const sp = data.augments.filter(a => a.pool && rules.pools.includes(a.pool) && !exclude.has(a.id));
+      const same = sp.filter(a => a.tier === tier);
+      const from = same.length ? same : sp;
+      if (from.length) { const a = from[Math.floor(R() * from.length)]; ids.push(a.id); exclude.add(a.id); }
+    }
+    while (ids.length < rules.choices) {
+      let c = candidates(data, rules, tier, exclude);
+      if (!c.length) c = candidates(data, rules, null, exclude);
+      if (!c.length) break;
+      const a = c[Math.floor(R() * c.length)];
+      ids.push(a.id); exclude.add(a.id);
+    }
+    const out = shuffle(ids, R);
+    return { tier, ids: out, seen: out.slice() };
+  }
+  function startRound(m, data) {
+    m.round = 0; m.slots[0].augIds = [];
+    m.offer = rollOffer(m, data, 0, 0, rngFrom(m, 'rng'));
+  }
+  function pickAugment(m, data, id) {
+    const s = m.slots[0];
+    if (!m.offer || !m.offer.ids.includes(id)) return false;
+    s.augIds.push(id); m.round++;
+    if (m.round < s.picks) m.offer = rollOffer(m, data, 0, m.round, rngFrom(m, 'rng'));
+    else { m.offer = null; aiPickAll(m, data, false); }
+    return true;
+  }
+  function rerollCard(m, data, i) {
+    if (!m.offer || m.rerollsLeft <= 0) return false;
+    const cur = data.augById[m.offer.ids[i]];
+    if (!cur) return false;
+    const exclude = new Set([...m.slots[0].augIds, ...m.offer.ids, ...m.offer.seen]);
+    let c = candidates(data, m.rules, cur.tier, exclude);
+    if (!c.length) c = candidates(data, m.rules, null, exclude);
+    if (!c.length) return false;
+    const a = c[Math.floor(rngFrom(m, 'rng')() * c.length)];
+    m.offer.ids[i] = a.id; m.offer.seen.push(a.id); m.rerollsLeft--;
+    return true;
+  }
+
+  // ───────── 컴퓨터의 증강 고르기 ─────────
+  const W = {
+    탱커:   { power: .5, autoAd: .2, hp: 1, armor: 1, mr: 1, as: .2, crit: 0, critDmg: 0, vamp: .4, haste: .7, amp: .4, red: 1, healAmp: .3, pen: .2, shield: 1, regen: .8, revive: .9, execute: .3, thorns: 1, splash: .6, stunB: 1 },
+    전사:   { power: 1, autoAd: .6, hp: .8, armor: .7, mr: .6, as: .7, crit: .4, critDmg: .3, vamp: 1, haste: .7, amp: .9, red: .7, healAmp: .5, pen: .8, shield: .6, regen: .6, revive: .8, execute: .7, thorns: .5, splash: .6, stunB: .5 },
+    암살자: { power: 1, autoAd: .5, hp: .4, armor: .3, mr: .3, as: .5, crit: .6, critDmg: .6, vamp: .6, haste: .8, amp: 1, red: .4, healAmp: .2, pen: 1, shield: .4, regen: .3, revive: .7, execute: 1, thorns: .1, splash: .5, stunB: .4 },
+    마법사: { power: 1, autoAd: .1, hp: .5, armor: .3, mr: .4, as: .1, crit: .05, critDmg: .05, vamp: .3, haste: 1, amp: .9, red: .5, healAmp: .3, pen: .9, shield: .5, regen: .3, revive: .7, execute: .6, thorns: .1, splash: 1, stunB: .6 },
+    원딜:   { power: 1, autoAd: 1, hp: .5, armor: .3, mr: .3, as: 1, crit: 1, critDmg: .9, vamp: .8, haste: .4, amp: .9, red: .5, healAmp: .2, pen: .8, shield: .5, regen: .3, revive: .7, execute: .6, thorns: .1, splash: .4, stunB: .2 },
+    서포터: { power: .9, autoAd: .1, hp: .6, armor: .5, mr: .5, as: .1, crit: 0, critDmg: 0, vamp: .2, haste: 1, amp: .3, red: .6, healAmp: 1, pen: .2, shield: .8, regen: .5, revive: .6, execute: .2, thorns: .3, splash: .4, stunB: .6 },
+  };
+  function statWeight(c, key) {
+    const w = W[c.role];
+    if (key === 'ad') return c.dmgType === 'magic' ? w.autoAd : w.power;
+    if (key === 'ap') return c.dmgType === 'magic' ? w.power : 0.03;
+    return w[key] ?? 0.4;
+  }
+  function affinity(a, c) {
+    if (!a || !a.tokens.length) return 0.1;
+    let sum = 0;
+    for (const t of a.tokens) {
+      const sc = t.scope || '나';
+      let w = (sc === '나' || sc === '처치당' || sc === '한타당') ? statWeight(c, t.stat) : 0.7;
+      if (t.op === '-' && (sc === '나')) w = -w * 0.5;
+      sum += w;
+    }
+    return sum / a.tokens.length;
+  }
+  function aiPickAll(m, data, includePlayer) {
+    const R = rngFrom(m, 'rng');
+    m.slots.forEach((s, idx) => {
+      if (s.isPlayer && !includePlayer) return;
+      const c = data.champById[s.champId];
+      s.augIds = [];
+      for (let r = 0; r < s.picks; r++) {
+        const off = rollOffer(m, data, idx, r, R);
+        let best = null, bs = -1e9;
+        for (const id of off.ids) {
+          const a = data.augById[id];
+          const sc = affinity(a, c) + (a.roles.includes(c.role) ? 0.5 : 0) + R() * 0.35;
+          if (sc > bs) { bs = sc; best = id; }
+        }
+        if (best) s.augIds.push(best);
+      }
+    });
+  }
+  function buildFit(c, augs) {
+    if (!augs.length) return { stars: 0, avg: 0, worst: null };
+    const scored = augs.map(a => ({ a, s: affinity(a, c) }));
+    const avg = scored.reduce((s, x) => s + x.s, 0) / scored.length;
+    const stars = Math.max(1, Math.min(5, Math.round(1 + avg * 4.4)));
+    const worst = scored.reduce((p, q) => (p.s <= q.s ? p : q));
+    return { stars, avg, worst: worst.s < 0.45 ? worst.a : null };
+  }
+
+  // ───────── 전투 시뮬레이션 ─────────
+  function applyMods(base, mods) {
+    const out = { hp: base.hp, ad: base.ad, ap: base.ap, armor: base.armor, mr: base.mr, as: base.as, crit: base.crit || 0, critDmg: 0, vamp: 0, haste: 0, amp: 0, red: 0, healAmp: 0, pen: 0, shieldFlat: 0, shieldPct: 0, regen: 0, revive: 0, execute: 0, thorns: 0, splash: 0, stunB: 0 };
+    const flat = {}, pct = {}, set = {};
+    for (const { t, mult } of mods) {
+      const k = t.stat;
+      if (t.op === '=') { if (k === 'shield') set.shieldFlat = t.value; else set[k] = t.value; continue; }
+      const v = t.value * mult * (t.op === '-' ? -1 : 1);
+      if (k === 'shield') { if (t.pct) out.shieldPct += v; else out.shieldFlat += v; continue; }
+      if (BASE_KIND.has(k) && t.pct) pct[k] = (pct[k] || 0) + v;
+      else flat[k] = (flat[k] || 0) + v;
+    }
+    for (const k of Object.keys(out)) {
+      if (k in set) { out[k] = set[k]; continue; }
+      out[k] = (out[k] + (flat[k] || 0)) * (BASE_KIND.has(k) ? 1 + (pct[k] || 0) / 100 : 1);
+    }
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    out.hp = Math.max(1, out.hp); out.ad = Math.max(0, out.ad); out.ap = Math.max(0, out.ap);
+    out.armor = Math.max(-50, out.armor); out.mr = Math.max(-50, out.mr);
+    out.as = clamp(out.as, 0.2, 2.5); out.crit = clamp(out.crit, 0, 100); out.critDmg = Math.max(-100, out.critDmg);
+    out.vamp = clamp(out.vamp, 0, 100); out.haste = clamp(out.haste, 0, 250); out.amp = Math.max(-80, out.amp);
+    out.red = clamp(out.red, -60, 70); out.healAmp = Math.max(-90, out.healAmp); out.pen = clamp(out.pen, 0, 80);
+    out.shieldFlat = Math.max(0, out.shieldFlat); out.shieldPct = clamp(out.shieldPct, 0, 200); out.regen = clamp(out.regen, 0, 10);
+    out.revive = Math.max(0, Math.floor(out.revive)); out.execute = clamp(out.execute, 0, 40); out.thorns = clamp(out.thorns, 0, 150);
+    out.splash = clamp(out.splash, 0, 100); out.stunB = clamp(out.stunB, 0, 3);
+    return out;
+  }
+  function collectMods(p, P, f, tarot) {
+    const mods = [];
+    for (const q of P) for (const a of q.augs) for (const t of a.tokens) {
+      const sc = t.scope || '나';
+      let mult = 0;
+      if (sc === '나') mult = q === p ? 1 : 0;
+      else if (sc === '처치당') mult = q === p ? p.takedowns : 0;
+      else if (sc === '한타당') mult = q === p ? f : 0;
+      else if (sc === '팀' || sc === '우리팀') mult = q.team === p.team ? 1 : 0;
+      else if (sc === '적' || sc === '상대팀') mult = q.team !== p.team ? 1 : 0;
+      else if (sc === '전체') mult = 1;
+      if (mult) mods.push({ t, mult });
+    }
+    if (tarot) for (const t of tarot.tokens) {
+      if (!t.stat) continue;
+      const sc = t.scope || '전체';
+      let mult = 0;
+      if (sc === '전체') mult = 1;
+      else if (sc === '팀' || sc === '우리팀') mult = p.team === 'A' ? 1 : 0;
+      else if (sc === '적' || sc === '상대팀') mult = p.team === 'B' ? 1 : 0;
+      else if (sc === '나') mult = p.isPlayer ? 1 : 0;
+      else if (sc === '처치당') mult = p.takedowns;
+      else if (sc === '한타당') mult = f;
+      if (mult) mods.push({ t, mult });
+    }
+    return mods;
+  }
+  function makeUnit(p, P, f, lost, tarot, R) {
+    const b = p.champ.base;
+    const g = (1 + SIM.growth * f) * (1 + Math.min(SIM.goldCap, p.tdGold / 1000 * SIM.goldPer1000));
+    const base = { hp: b.hp * g, ad: b.ad * g, ap: b.ap * g, armor: b.armor + SIM.resGrowth * f, mr: b.mr + SIM.resGrowth * f, as: b.as, crit: b.crit || 0 };
+    const s = applyMods(base, collectMods(p, P, f, tarot));
+    const def = SIM.defender * (lost[p.team] || 0);
+    s.amp += def; s.red = Math.min(70, s.red + def);
+    const sk = ROLE_SKILL[p.champ.role];
+    const cd = sk.cd * 100 / (100 + s.haste);
+    return {
+      p, i: p.i, team: p.team, role: p.champ.role, dmgType: p.champ.dmgType, sk, cd, ...s,
+      maxHp: s.hp, shield: s.shieldFlat + s.shieldPct / 100 * s.hp, reviveLeft: s.revive,
+      alive: true, stun: 0, atkT: R() * 0.5, skT: R() * cd * 0.6, target: null,
+      delay: p.champ.role === '암살자' ? 1.25 : MELEE.has(p.champ.role) ? 0.5 : 0,
+      kills: 0, lastKillT: 0, hitBy: new Map(), helpedBy: new Map(),
+    };
+  }
+  function runFight(P, f, lost, tarot, R) {
+    const units = P.map(p => makeUnit(p, P, f, lost, tarot, R));
+    const ev = []; let t = 0;
+    const teamAlive = team => units.some(u => u.alive && u.team === team);
+    const enemiesOf = u => units.filter(e => e.alive && e.team !== u.team);
+    const alliesOf = u => units.filter(e => e.alive && e.team === u.team);
+
+    function heal(src, tgt, amt) {
+      if (!tgt.alive || amt <= 0) return 0;
+      const eff = Math.min(amt, tgt.maxHp - tgt.hp);
+      if (eff > 0) { tgt.hp += eff; src.p.healed += eff; if (src !== tgt) tgt.helpedBy.set(src.i, t); }
+      return eff;
+    }
+    function die(v, k) {
+      if (v.reviveLeft > 0) { v.reviveLeft--; v.hp = v.maxHp * SIM.reviveHp; v.stun = 0; ev.push({ t, kind: 'revive', slot: v.i }); return; }
+      v.alive = false; v.hp = 0; v.p.D++;
+      k.p.K++; k.p.tdGold += SIM.killGold; k.p.takedowns++; k.kills++; k.lastKillT = t;
+      const assists = new Set();
+      for (const [i, when] of v.hitBy) if (i !== k.i && t - when <= SIM.assistWindow && units[i].team === k.team) assists.add(i);
+      for (const [i, when] of k.helpedBy) if (i !== k.i && t - when <= SIM.assistWindow && units[i].team === k.team) assists.add(i);
+      for (const i of assists) { const a = units[i].p; a.A++; a.tdGold += SIM.assistGold; a.takedowns++; }
+      ev.push({ t, kind: 'kill', killer: k.i, victim: v.i, assists: [...assists] });
+    }
+    function damage(src, tgt, raw, type, reflected) {
+      if (!tgt.alive || raw <= 0) return 0;
+      let mult = 1;
+      if (type === 'phys') mult = 100 / (100 + Math.max(0, tgt.armor * (1 - src.pen / 100)));
+      else if (type === 'magic') mult = 100 / (100 + Math.max(0, tgt.mr * (1 - src.pen / 100)));
+      const dmg = raw * mult * Math.max(0.1, 1 + src.amp / 100) * (1 - tgt.red / 100);
+      if (dmg <= 0) return 0;
+      const absorbed = Math.min(tgt.shield, dmg);
+      tgt.shield -= absorbed; tgt.hp -= dmg - absorbed;
+      src.p.dealt += dmg; tgt.p.taken += dmg;
+      tgt.hitBy.set(src.i, t);
+      if (src.vamp > 0 && src.alive) heal(src, src, dmg * src.vamp / 100);
+      if (!reflected && tgt.thorns > 0 && src.alive) damage(tgt, src, dmg * tgt.thorns / 100, 'true', true);
+      if (!tgt.alive) return dmg;
+      if (tgt.hp <= 0) die(tgt, src);
+      else if (src.execute > 0 && tgt.hp / tgt.maxHp * 100 <= src.execute) { tgt.hp = 0; die(tgt, src); }
+      return dmg;
+    }
+    function pickTarget(u) {
+      const enemies = enemiesOf(u);
+      if (!enemies.length) return null;
+      if (u.role === '암살자') {
+        const back = enemies.filter(e => !FRONT.has(e.role));
+        const pool = back.length ? back : enemies;
+        return pool.reduce((a, b) => (a.hp < b.hp ? a : b));
+      }
+      if (u.role === '마법사' && R() < 0.5) return enemies.reduce((a, b) => (a.hp < b.hp ? a : b));
+      const front = enemies.filter(e => FRONT.has(e.role));
+      if (front.length && R() < (MELEE.has(u.role) ? 0.85 : 0.7)) return front[Math.floor(R() * front.length)];
+      return enemies[Math.floor(R() * enemies.length)];
+    }
+    function cast(u, tgt) {
+      const sk = u.sk; const main = u.dmgType === 'magic' ? u.ap : u.ad;
+      const type = u.dmgType === 'magic' ? 'magic' : 'phys';
+      if (sk.kind === 'heal') {
+        const allies = alliesOf(u).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
+        const amt = (sk.base + sk.ratio * main) * Math.max(0.1, 1 + u.healAmp / 100);
+        if (allies[0]) heal(u, allies[0], amt);
+        if (u.splash > 0 && allies[1]) heal(u, allies[1], amt * u.splash / 100);
+        damage(u, tgt, (sk.base + sk.ratio * main) * 0.4, type, false);
+        if (u.stunB > 0 && tgt.alive) tgt.stun = Math.max(tgt.stun, u.stunB);
+        return;
+      }
+      let raw = sk.base + sk.ratio * main + (sk.hpR || 0) * u.maxHp;
+      if (sk.canCrit && R() * 100 < u.crit) raw *= 1.75 + u.critDmg / 100;
+      const dealt = damage(u, tgt, raw, type, false);
+      if (sk.drain && u.alive) heal(u, u, dealt * sk.drain);
+      const st = (sk.stun || 0) + u.stunB;
+      if (st > 0 && tgt.alive) tgt.stun = Math.max(tgt.stun, st);
+      const sp = (sk.splash || 0) + u.splash;
+      if (sp > 0) for (const o of shuffle(enemiesOf(u).filter(e => e !== tgt), R).slice(0, 2)) damage(u, o, raw * sp / 100, type, false);
+    }
+    function act(u) {
+      if (t < u.delay) return;
+      if (u.stun > 0) { u.stun -= SIM.dt; return; }
+      if (u.regen > 0) heal(u, u, u.maxHp * u.regen / 100 * SIM.dt);
+      u.atkT += SIM.dt; u.skT += SIM.dt;
+      if (!u.target || !u.target.alive) u.target = pickTarget(u);
+      if (!u.target) return;
+      if (!MELEE.has(u.role) && u.target.role !== '암살자') {
+        const diver = units.find(e => e.alive && e.team !== u.team && e.role === '암살자' && e.target === u && t >= e.delay);
+        if (diver && R() < 0.5) u.target = diver;
+      }
+      if (u.skT >= u.cd) {
+        u.skT -= u.cd;
+        cast(u, u.target);
+        if (!u.alive) return;
+        if (!u.target.alive) u.target = pickTarget(u);
+        if (!u.target) return;
+      }
+      const iv = 1 / u.as;
+      if (u.atkT >= iv) {
+        u.atkT -= iv;
+        let raw = u.ad;
+        if (R() * 100 < u.crit) raw *= 1.75 + u.critDmg / 100;
+        damage(u, u.target, raw, 'phys', false);
+      }
+    }
+
+    while (t < SIM.maxFight && teamAlive('A') && teamAlive('B')) {
+      for (const u of shuffle(units.filter(x => x.alive), R)) if (u.alive) act(u);
+      t += SIM.dt;
+    }
+    const aliveA = units.filter(u => u.alive && u.team === 'A');
+    const aliveB = units.filter(u => u.alive && u.team === 'B');
+    let winner, ace = false;
+    if (aliveA.length && !aliveB.length) { winner = 'A'; ace = true; }
+    else if (aliveB.length && !aliveA.length) { winner = 'B'; ace = true; }
+    else if (!aliveA.length && !aliveB.length) winner = R() < 0.5 ? 'A' : 'B';
+    else {
+      const hpSum = arr => arr.reduce((s, u) => s + u.hp / u.maxHp, 0);
+      winner = hpSum(aliveA) >= hpSum(aliveB) ? 'A' : 'B';
+    }
+    for (const u of units) {
+      u.p.best = Math.max(u.p.best, u.kills);
+      if (u.kills >= 3) ev.push({ t: u.lastKillT + 0.01, kind: 'multi', slot: u.i, count: u.kills });
+    }
+    ev.sort((a, b) => a.t - b.t);
+    const survivors = (winner === 'A' ? aliveA : aliveB).length;
+    return { winner, ace, survivors, duration: t, events: ev };
+  }
+
+  function simulate(m, data) {
+    const holder = { s: (m.seed ^ 0x5bd1e995) | 0 };
+    const R = rngFrom(holder, 's');
+    const tarot = m.tarotId ? data.tarotById[m.tarotId] : null;
+    const P = m.slots.map((s, i) => ({
+      i, team: s.team, isPlayer: s.isPlayer, champ: data.champById[s.champId],
+      augs: s.augIds.map(id => data.augById[id]).filter(Boolean),
+      K: 0, D: 0, A: 0, dealt: 0, taken: 0, healed: 0, tdGold: 0, takedowns: 0, best: 0,
+    }));
+    const lost = { A: 0, B: 0 };
+    const fights = [];
+    let time = SIM.firstFight, winner = null, firstBlood = true;
+    for (let f = 0; f < SIM.maxFights && !winner; f++) {
+      if (f > 0) time += SIM.gapMin + R() * (SIM.gapMax - SIM.gapMin);
+      const start = time;
+      const fr = runFight(P, f, lost, tarot, R);
+      for (const e of fr.events) {
+        e.at = start + e.t;
+        if (e.kind === 'kill' && firstBlood) { e.first = true; firstBlood = false; }
+      }
+      time += fr.duration;
+      const loser = fr.winner === 'A' ? 'B' : 'A';
+      let push = fr.ace && fr.survivors >= 4 ? 2 : 1;
+      const destroyed = [];
+      while (push-- > 0 && lost[loser] < STRUCTURES.length) { destroyed.push(STRUCTURES[lost[loser]]); lost[loser]++; time += 8; }
+      const kills = { A: 0, B: 0 };
+      for (const e of fr.events) if (e.kind === 'kill') kills[P[e.killer].team]++;
+      fights.push({ n: f + 1, start, end: time, winner: fr.winner, ace: fr.ace, kills, events: fr.events.map(({ t, ...rest }) => rest), destroyed, loser, lostAfter: { ...lost } });
+      if (lost[loser] >= STRUCTURES.length) winner = fr.winner;
+    }
+    const killsA = P.filter(p => p.team === 'B').reduce((s, p) => s + p.D, 0);
+    const killsB = P.filter(p => p.team === 'A').reduce((s, p) => s + p.D, 0);
+    if (!winner) winner = lost.B > lost.A ? 'A' : lost.A > lost.B ? 'B' : (killsA >= killsB ? 'A' : 'B');
+
+    const mean = k => P.reduce((s, p) => s + p[k], 0) / P.length || 1;
+    const md = mean('dealt'), mt = mean('taken'), mh = mean('healed');
+    const players = P.map(p => {
+      const score = p.K * 3 + p.A * 1.5 - p.D * 1.5 + (p.dealt / md) * 4 + (p.taken / mt) * 2.5 + (mh > 0 ? (p.healed / mh) * 2 : 0) + (p.team === winner ? 3 : 0);
+      return {
+        slot: p.i, team: p.team, isPlayer: p.isPlayer, champId: p.champ.id, augIds: p.augs.map(a => a.id),
+        K: p.K, D: p.D, A: p.A, dealt: Math.round(p.dealt), taken: Math.round(p.taken), healed: Math.round(p.healed),
+        gold: Math.round((SIM.startGold + SIM.passiveGold * time + p.tdGold) / 10) * 10, best: p.best, score,
+      };
+    });
+    const GRADES = ['S+', 'S', 'S-', 'A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+'];
+    [...players].sort((a, b) => b.score - a.score).forEach((p, r) => { p.grade = GRADES[Math.min(r, GRADES.length - 1)]; });
+    const bestOf = team => players.filter(p => p.team === team).reduce((a, b) => (a.score >= b.score ? a : b));
+    bestOf(winner).mvp = true;
+    bestOf(winner === 'A' ? 'B' : 'A').teamAce = true;
+    return { winner, duration: time, killsA, killsB, lost, fights, players };
+  }
+
+  function autoMatch(data, seed) {
+    const m = newMatch(data, seed);
+    const R = rngFrom(m, 'rng');
+    chooseTarot(m, data, m.tarotChoices.length ? Math.floor(R() * m.tarotChoices.length) : -1);
+    aiPickAll(m, data, true);
+    m.result = simulate(m, data);
+    return m;
+  }
+  function balanceReport(data, matches) {
+    const role = {}, champ = {}, aug = {}, tarot = {};
+    let len = 0, kills = 0, winsA = 0, fights = 0;
+    const add = (map, key, win) => { const o = map[key] || (map[key] = { n: 0, w: 0 }); o.n++; if (win) o.w++; };
+    for (const m of matches) {
+      const r = m.result;
+      len += r.duration; kills += r.killsA + r.killsB; fights += r.fights.length;
+      if (r.winner === 'A') winsA++;
+      for (const s of m.slots) {
+        const win = s.team === r.winner;
+        const c = data.champById[s.champId];
+        add(champ, s.champId, win); add(role, c.role, win);
+        for (const id of s.augIds) add(aug, id, win);
+      }
+      if (m.tarotId) add(tarot, m.tarotId, r.winner === 'A');
+    }
+    const n = matches.length || 1;
+    return { n: matches.length, avgLen: len / n, avgKills: kills / n, avgFights: fights / n, sideA: winsA / n, role, champ, aug, tarot };
+  }
+
+  return {
+    TIERS, TIER_KEY, ROLES, ROLE_KEY, ROLE_BASE, ROLE_SKILL, SKILL_TEXT, STRUCTURES, STAT_LABEL, DEFAULT_RULES, SIM,
+    decode, parseCSV, detectKind, buildData, parseEffects, describeToken, describeRule, describeTokens,
+    newMatch, setPlayerChamp, chooseTarot, startRound, pickAugment, rerollCard, aiPickAll, simulate, autoMatch, balanceReport,
+    affinity, buildFit, picksFor, computeRules,
+  };
+})();
+/*ENGINE_END*/
+
+// ═════════════════ 화면 ═════════════════
+(() => {
+  'use strict';
+  const E = Engine;
+  const $ = (s, el = document) => el.querySelector(s);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const stage = $('#stage');
+  const KIND_LABEL = { champions: '캐릭터', augments: '증강', tarot: '타로' };
+  const LS_DATA = 'merol.csv.v1';
+  const LS_REC = 'merol.record.v1';
+
+  const app = { screen: 'title', match: null, modal: null, data: null, uploads: {}, fetched: {}, sources: {}, images: new Map(), notes: [], balance: null, fresh: null, timer: null };
+
+  // ───── 저장소 ─────
+  const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
+  const embedded = id => document.getElementById(id).textContent.trim();
+
+  function rebuild() {
+    const raw = {}; const ids = { champions: 'csv-champions', augments: 'csv-augments', tarot: 'csv-tarot' };
+    for (const k of Object.keys(ids)) {
+      if (app.uploads[k]) { raw[k] = app.uploads[k]; app.sources[k] = '올린 파일'; }
+      else if (app.fetched[k]) { raw[k] = app.fetched[k]; app.sources[k] = 'data 폴더'; }
+      else { raw[k] = embedded(ids[k]); app.sources[k] = '샘플'; }
+    }
+    let d = E.buildData(raw);
+    const fix = [];
+    if (!d.champions.length) { raw.champions = embedded(ids.champions); app.sources.champions = '샘플 (올린 표가 비어 있음)'; fix.push('캐릭터'); }
+    if (!d.augments.length) { raw.augments = embedded(ids.augments); app.sources.augments = '샘플 (올린 표가 비어 있음)'; fix.push('증강'); }
+    if (fix.length) {
+      const w = d.warnings;
+      d = E.buildData(raw);
+      d.warnings = w.concat(fix.map(k => ({ where: k, msg: `${k} 표에서 읽을 수 있는 줄이 없어서 샘플을 대신 썼어요.` })));
+    }
+    app.data = d;
+  }
+  async function tryFolder() {
+    const files = { champions: 'data/champions.csv', augments: 'data/augments.csv', tarot: 'data/tarot.csv' };
+    let changed = false;
+    await Promise.all(Object.entries(files).map(async ([k, url]) => {
+      try {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) return;
+        const text = E.decode(await res.arrayBuffer());
+        if (E.detectKind(text) === k) { app.fetched[k] = text; changed = true; }
+      } catch (e) { /* 폴더가 없으면 샘플 사용 */ }
+    }));
+    if (changed && !app.uploads.champions && !app.uploads.augments && !app.uploads.tarot) { rebuild(); if (app.screen === 'title') render(); }
+  }
+
+  // ───── 작은 도구 ─────
+  const firstChar = s => Array.from(String(s || '?'))[0];
+  const fmtTime = s => { s = Math.max(0, Math.round(s)); return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; };
+  const fmtNum = n => Math.round(n).toLocaleString('ko-KR');
+  const josa = (w, pair) => { const [a, b] = pair.split('/'); const c = String(w).charCodeAt(String(w).length - 1); const has = c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 !== 0; return w + (has ? a : b); };
+  const basename = p => String(p).split(/[\\/]/).pop().toLowerCase();
+  function imgFor(e) {
+    if (!e) return null;
+    if (e.img) { const b = basename(e.img); return app.images.get(b) || e.img; }
+    for (const ext of ['png', 'jpg', 'jpeg', 'webp', 'gif']) { const k = `${String(e.id).toLowerCase()}.${ext}`; if (app.images.has(k)) return app.images.get(k); }
+    return null;
+  }
+  const artTag = e => { const src = imgFor(e); return src ? `<img class="art" alt="" src="${esc(src)}">` : ''; };
+  const portrait = (c, cls = '') => `<span class="portrait role-${E.ROLE_KEY[c.role]} ${cls}" aria-hidden="true"><span class="ph">${esc(firstChar(c.name))}</span>${artTag(c)}</span>`;
+  const augIcon = (a, cls = '') => `<span class="aug-icon tier-${E.TIER_KEY[a.tier]} ${cls}" title="${esc(a.name)} · ${esc(a.tier)}"><span class="ph">${esc(firstChar(a.name))}</span>${artTag(a)}</span>`;
+  const dirLabel = t => (t.dir === '역' ? '역방향' : '정방향');
+  function sigil(seed) {
+    let h = 2166136261;
+    for (const ch of String(seed)) h = Math.imul(h ^ ch.codePointAt(0), 16777619) >>> 0;
+    const pts = 5 + (h % 4); const inner = 0.36 + ((h >>> 4) % 22) / 100; const rot = ((h >>> 9) % 360) * Math.PI / 180;
+    let d = '';
+    for (let i = 0; i < pts * 2; i++) {
+      const r = i % 2 ? 30 * inner : 30; const a = Math.PI * i / pts + rot;
+      d += `${i ? 'L' : 'M'}${(50 + r * Math.sin(a)).toFixed(1)} ${(50 - r * Math.cos(a)).toFixed(1)}`;
+    }
+    return `<svg class="sigil" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="41" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width=".6" stroke-dasharray="1.5 3"/><path d="${d}Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><circle cx="50" cy="50" r="5" fill="currentColor"/></svg>`;
+  }
+  const tarotBack = () => `<span class="tb">${sigil('메롤-뒷면')}<span class="tb-mark">메롤</span></span>`;
+  const tarotFront = t => `<span class="tf ${t.dir === '역' ? 'rev' : ''}"><span class="tf-inner"><span class="tf-num">${esc(t.numeral)}</span><span class="tf-art">${sigil(t.name)}${artTag(t)}</span><span class="tf-name">${esc(t.name)}</span></span></span>`;
+
+  function augCard(a, o = {}) {
+    return `<article class="aug-card tier-${E.TIER_KEY[a.tier]} ${o.cls || ''}"${o.style ? ` style="${o.style}"` : ''}>
+      ${a.pool ? `<span class="special">${esc(a.poolLabel || '특별')}</span>` : ''}
+      ${augIcon(a)}
+      <span class="aug-tier">${esc(a.tier)}</span>
+      <h3>${esc(a.name)}</h3>
+      <p class="desc">${esc(a.desc)}</p>
+      ${o.static ? '' : `<div class="card-actions">
+        <button class="btn primary pick" data-action="pick" data-id="${esc(a.id)}">선택 <kbd>${o.index + 1}</kbd></button>
+        <button class="btn reroll" data-action="reroll" data-i="${o.index}"${o.canReroll ? '' : ' disabled'} title="이 카드만 다시 뽑기">다시 뽑기</button>
+      </div>`}
+    </article>`;
+  }
+
+  function ruleChips(m) {
+    const d = app.data; const r = m.rules; const t = m.tarotId ? d.tarotById[m.tarotId] : null;
+    const me = m.slots[0];
+    const chips = [];
+    const def = E.DEFAULT_RULES;
+    chips.push(`<span class="chip ${me.picks !== def.picks ? 'rule' : ''}">증강 ${me.picks}번</span>`);
+    const enemyPicks = m.slots[5] ? m.slots[5].picks : me.picks;
+    if (enemyPicks !== me.picks) chips.push(`<span class="chip rule">상대 팀 증강 ${enemyPicks}번</span>`);
+    chips.push(`<span class="chip ${r.rerolls !== def.rerolls ? 'rule' : ''}">리롤 ${r.rerolls}번</span>`);
+    chips.push(`<span class="chip ${r.choices !== def.choices ? 'rule' : ''}">선택지 ${r.choices}장</span>`);
+    const w = r.weights; const tot = E.TIERS.reduce((s, k) => s + w[k], 0) || 1;
+    const changedW = E.TIERS.some(k => w[k] !== def.weights[k]);
+    if (r.tierLock) chips.push(`<span class="chip rule">모든 증강 ${esc(r.tierLock)}</span>`);
+    else if (changedW) chips.push(`<span class="chip rule">${E.TIERS.map(k => `${k} ${Math.round(w[k] / tot * 100)}%`).join(' · ')}</span>`);
+    if (t) for (const tok of t.tokens) {
+      if (tok.rule === 'lastTier' || tok.rule === 'nthTier' || tok.rule === 'pool') chips.push(`<span class="chip rule">${esc(E.describeRule(tok))}</span>`);
+      if (tok.stat) chips.push(`<span class="chip rule">${esc(E.describeToken(tok, 'tarot'))}</span>`);
+    }
+    return chips.join('');
+  }
+
+  function fateStrip(m) {
+    const d = app.data; const t = m.tarotId ? d.tarotById[m.tarotId] : null; const s = m.slots[0]; const c = d.champById[s.champId];
+    const slots = [];
+    for (let i = 0; i < s.picks; i++) {
+      const a = d.augById[s.augIds[i]];
+      slots.push(a ? `<span class="slot filled">${augIcon(a, 'sm')}${esc(a.name)}</span>` : `<span class="slot">증강 ${i + 1}</span>`);
+    }
+    return `<div class="fate">
+      ${t ? `<div class="fate-tarot"><span class="mini-tarot ${t.dir === '역' ? 'rev' : ''}">${esc(t.numeral || '·')}</span><span><b>${esc(t.name)}</b><small>${dirLabel(t)}</small></span></div>` : ''}
+      ${m.champChosen === false ? '<div class="fate-champ"><span class="muted">챔피언 고르는 중</span></div>' : `<div class="fate-champ">${portrait(c, 'sm')}<span><b>${esc(c.name)}</b><small>${esc(c.role)}</small></span></div>`}
+      <div class="fate-slots">${slots.join('')}</div>
+    </div>`;
+  }
+
+  // ───── 화면들 ─────
+  function viewTitle() {
+    const d = app.data;
+    const show = E.TIERS.map(t => d.augments.find(a => a.tier === t && !a.pool) || d.augments.find(a => a.tier === t)).filter(Boolean);
+    const rules = E.DEFAULT_RULES;
+    return `<section class="screen title-screen">
+      <div class="title-copy">
+        <p class="eyebrow">증강 칼바람 체험</p>
+        <h1 class="mega">메롤</h1>
+        <p class="fan-line">리그 오브 레전드 팬게임</p>
+        <p class="lede">타로 한 장이 이번 판의 규칙을 바꿉니다. 고른 챔피언에게 증강을 붙여 주면, 한타는 컴퓨터가 끝까지 싸우고 결과만 알려줍니다.</p>
+        <button class="btn primary big" data-action="start">운명 카드 뽑기</button>
+        <ul class="title-facts">
+          <li><b>${rules.picks}번</b>증강 선택</li>
+          <li><b>${rules.rerolls}번</b>리롤</li>
+          <li><b>5 대 5</b>자동 전투</li>
+          <li><b>${d.tarot.length}장</b>운명 카드</li>
+        </ul>
+      </div>
+      <div class="showcase" aria-hidden="true">${show.map(a => augCard(a, { static: true })).join('')}</div>
+    </section>`;
+  }
+  function viewTarot(m) {
+    const d = app.data; const picked = m.tarotPicked;
+    const cards = m.tarotChoices.map((id, i) => {
+      const t = d.tarotById[id];
+      const cls = picked == null ? '' : (i === picked ? 'flipped chosen' : 'dim');
+      return `<button class="tarot ${cls}" data-action="flip" data-i="${i}"${picked != null ? ' disabled' : ''} aria-label="${i + 1}번째 카드 뒤집기">
+        <span class="tarot-inner"><span class="face back">${tarotBack()}</span><span class="face front">${tarotFront(t)}</span></span>
+      </button>`;
+    }).join('');
+    const t = picked != null ? d.tarotById[m.tarotId] : null;
+    return `<section class="screen tarot-screen">
+      <header class="screen-head center">
+        <h2>이번 판의 운명을 고르세요</h2>
+        <p class="sub">${m.tarotChoices.length}장 중 한 장을 뒤집으면 이번 판의 규칙이 정해집니다.</p>
+      </header>
+      <div class="spread">${cards}</div>
+      <div class="reveal" id="reveal">${t ? revealPanel(t, m) : ''}</div>
+    </section>`;
+  }
+  function revealPanel(t, m) {
+    return `<p class="eyebrow">${esc(t.numeral)}${t.numeral ? ' · ' : ''}${dirLabel(t)}</p>
+      <h3>${esc(t.name)}</h3>
+      <p class="reveal-desc">${esc(t.desc)}</p>
+      <div class="chips">${ruleChips(m)}</div>
+      <button class="btn primary big" data-action="to-champ">챔피언 고르기</button>`;
+  }
+  function statRows(c) {
+    const b = c.base;
+    const rows = [['체력', fmtNum(b.hp)], ['공격력', fmtNum(b.ad)], ['주문력', fmtNum(b.ap)], ['방어력', fmtNum(b.armor)], ['마법저항력', fmtNum(b.mr)], ['공격 속도', b.as.toFixed(2)], ['치명타', `${b.crit}%`], ['피해 유형', c.dmgType === 'magic' ? '마법' : '물리']];
+    return rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+  }
+  function viewChamp(m) {
+    const d = app.data; const s = m.slots[0];
+    const chosen = m.champChosen === false ? null : d.champById[s.champId];
+    const f = app.roleFilter || '전체';
+    const roles = ['전체', ...E.ROLES.filter(r => d.champions.some(c => c.role === r))];
+    const list = d.champions.filter(c => f === '전체' || c.role === f);
+    const detail = chosen ? `
+        <div class="detail-head">${portrait(chosen, 'lg')}<div>
+        <p class="eyebrow">${esc(chosen.role)}${chosen.title ? ` · ${esc(chosen.title)}` : ''}</p>
+        <h2 class="champ-name">${esc(chosen.name)}</h2></div></div>
+        ${chosen.desc ? `<p class="champ-desc">${esc(chosen.desc)}</p>` : ''}
+        <dl class="stats">${statRows(chosen)}</dl>
+        <p class="skill">${chosen.skill ? `스킬 <b>${esc(chosen.skill)}</b> · ` : ''}${esc(E.SKILL_TEXT[chosen.role])}</p>
+        <button class="btn primary big" data-action="to-augments">이 챔피언으로 증강 고르기 · ${s.picks}번</button>`
+      : `<p class="muted">목록에서 챔피언을 골라 주세요. 같은 팀과 상대 팀은 남은 챔피언 중에서 무작위로 정해져요.</p>`;
+    return `<section class="screen champ-screen">
+      ${fateStrip(m)}
+      <header class="aug-head">
+        <div><p class="eyebrow">챔피언 선택</p><h2 class="tier-title pick-title">누구로 싸울까요?</h2></div>
+        <button class="btn" data-action="random-champ">무작위로 고르기</button>
+      </header>
+      <div class="champ-select">
+        <div class="champ-list">
+          <div class="role-filters">${roles.map(r => `<button class="chip filter" data-action="role-filter" data-role="${esc(r)}" aria-pressed="${r === f}">${esc(r)}</button>`).join('')}</div>
+          <div class="champ-grid">${list.map(c => `<button class="pick-card" data-action="choose-champ" data-id="${esc(c.id)}" aria-pressed="${!!chosen && chosen.id === c.id}">${portrait(c, 'lg')}<b>${esc(c.name)}</b><small>${esc(c.role)}</small></button>`).join('')}</div>
+        </div>
+        <aside class="champ-detail" id="champ-detail">${detail}</aside>
+      </div>
+    </section>`;
+  }
+  function viewAugment(m) {
+    const d = app.data; const s = m.slots[0]; const off = m.offer;
+    const fresh = app.fresh; app.fresh = null;
+    const cards = off.ids.map((id, i) => augCard(d.augById[id], {
+      index: i, canReroll: m.rerollsLeft > 0,
+      cls: fresh === 'all' || fresh === i ? 'deal' : '',
+      style: fresh === 'all' ? `animation-delay:${i * 90}ms` : '',
+    })).join('');
+    return `<section class="screen aug-screen">
+      ${fateStrip(m)}
+      <header class="aug-head">
+        <div><p class="eyebrow">증강 선택 ${m.round + 1} / ${s.picks}</p><h2 class="tier-title tier-${E.TIER_KEY[off.tier]}">${esc(off.tier)} 증강</h2></div>
+        <span class="chip ${m.rerollsLeft ? '' : 'empty'}">리롤 ${m.rerollsLeft}번 남음</span>
+      </header>
+      <div class="aug-grid">${cards}</div>
+      <p class="hint">숫자 키 1~${off.ids.length}로도 고를 수 있어요.</p>
+    </section>`;
+  }
+  function miniCard(slot) {
+    const d = app.data; const c = d.champById[slot.champId];
+    const augs = slot.augIds.map(id => d.augById[id]).filter(Boolean);
+    return `<div class="mini ${slot.isPlayer ? 'me' : ''}">
+      ${portrait(c, 'lg')}
+      <b>${esc(c.name)}${slot.isPlayer ? ' (나)' : ''}</b>
+      <span class="role-chip role-${E.ROLE_KEY[c.role]}">${esc(c.role)}</span>
+      <span class="mini-augs">${augs.map(a => augIcon(a, 'sm')).join('')}</span>
+      <ul class="aug-names">${augs.map(a => `<li>${esc(a.name)}</li>`).join('')}</ul>
+    </div>`;
+  }
+  function viewLoading(m) {
+    const d = app.data; const t = m.tarotId ? d.tarotById[m.tarotId] : null;
+    return `<section class="screen load-screen">
+      <header class="screen-head center">
+        <h2>칼바람 다리 위로</h2>
+        <p class="sub">${t ? `운명 카드 ${esc(t.numeral)} ${esc(t.name)}(${dirLabel(t)}) 아래에서 ` : ''}양 팀 모두 증강을 골랐습니다.</p>
+      </header>
+      <div class="team ally-team"><h3>우리 팀</h3><div class="team-grid">${m.slots.filter(s => s.team === 'A').map(miniCard).join('')}</div></div>
+      <p class="vs">VS</p>
+      <div class="team enemy-team"><h3>상대 팀</h3><div class="team-grid">${m.slots.filter(s => s.team === 'B').map(miniCard).join('')}</div></div>
+      <div class="go"><button class="btn primary big" data-action="fight">전투 시작</button></div>
+    </section>`;
+  }
+  function viewBattle() {
+    const row = (team, label) => `<div class="tower-row ${team === 'A' ? 'ally-row-t' : 'enemy-row-t'}"><span>${label}</span>${E.STRUCTURES.map((n, i) => `<span class="pip" id="pip-${team}-${i}" title="${esc(n)}"></span>`).join('')}</div>`;
+    return `<section class="screen battle-screen"><div class="battle">
+      <div class="score"><span class="k a" id="ka">0</span><span class="clock"><b id="clock">00:00</b>경기 시간</span><span class="k b" id="kb">0</span></div>
+      <div class="score-names"><span>우리 팀</span><span>상대 팀</span></div>
+      <div class="towers">${row('A', '우리 포탑')}${row('B', '상대 포탑')}</div>
+      <ol class="feed" id="feed" aria-live="polite"></ol>
+      <div class="go"><button class="btn" data-action="skip">결과 바로 보기</button></div>
+    </div></section>`;
+  }
+  function viewResult(m) {
+    const d = app.data; const r = m.result; const win = r.winner === 'A';
+    const me = r.players[0]; const c = d.champById[me.champId];
+    const myAugs = me.augIds.map(id => d.augById[id]).filter(Boolean);
+    const fit = E.buildFit(c, myAugs);
+    const stars = '★'.repeat(fit.stars) + '☆'.repeat(5 - fit.stars);
+    const comment = fit.stars >= 4 ? '증강이 챔피언과 잘 맞았어요.' : fit.worst ? `${josa(fit.worst.name, '은/는')} ${esc(c.role)}에게 잘 맞지 않았어요.` : '무난한 조합이에요.';
+    const t = m.tarotId ? d.tarotById[m.tarotId] : null;
+    const maxDealt = Math.max(...r.players.map(p => p.dealt), 1);
+    const rows = team => r.players.filter(p => p.team === team).map(p => {
+      const pc = d.champById[p.champId];
+      const augs = p.augIds.map(id => d.augById[id]).filter(Boolean);
+      const badge = p.mvp ? '<span class="badge">MVP</span>' : p.teamAce ? '<span class="badge ace">ACE</span>' : '';
+      return `<tr class="p ${team === 'A' ? 'a' : 'b'} ${p.isPlayer ? 'me' : ''}">
+        <td><span class="who-cell">${portrait(pc, 'xs')}${esc(pc.name)}${p.isPlayer ? ' (나)' : ''} ${badge}</span></td>
+        <td><span class="augs-cell">${augs.map(a => augIcon(a, 'xs')).join('')}</span></td>
+        <td>${p.K} / ${p.D} / ${p.A}</td>
+        <td>${fmtNum(p.dealt)}<div class="bar"><i style="width:${(p.dealt / maxDealt * 100).toFixed(1)}%"></i></div></td>
+        <td>${fmtNum(p.taken)}</td>
+        <td>${fmtNum(p.healed)}</td>
+        <td>${fmtNum(p.gold)}</td>
+        <td><span class="g ${p.grade.startsWith('S') ? 'top' : ''}">${p.grade}</span></td>
+      </tr>`;
+    }).join('');
+    const fightLines = r.fights.map(f => {
+      const multi = f.events.filter(e => e.kind === 'multi').map(e => `${d.champById[r.players[e.slot].champId].name} ${multiLabel(e.count)}`);
+      const rev = f.events.filter(e => e.kind === 'revive').length;
+      return `<li>${fmtTime(f.end)} · ${f.n}번째 한타 · ${f.winner === 'A' ? '우리 팀' : '상대 팀'} 승리 (${f.kills.A} : ${f.kills.B})${f.destroyed.length ? ` · ${f.loser === 'A' ? '우리' : '상대'} ${f.destroyed.join(', ')} 파괴` : ''}${multi.length ? ` · ${esc(multi.join(', '))}` : ''}${rev ? ` · 부활 ${rev}번` : ''}</li>`;
+    }).join('');
+    return `<section class="screen result-screen">
+      <div class="verdict ${win ? 'win' : 'lose'}">
+        ${t ? `<p class="eyebrow">${esc(t.numeral)} ${esc(t.name)} · ${dirLabel(t)}</p>` : ''}
+        <h2>${win ? '승리' : '패배'}</h2>
+        <p class="verdict-sub">경기 시간 ${fmtTime(r.duration)} · 킬 ${r.killsA} : ${r.killsB}</p>
+      </div>
+      <div class="me-card">
+        ${portrait(c, 'lg')}
+        <div>
+          <p class="eyebrow">${esc(c.name)} · ${esc(c.role)}</p>
+          <p class="kda">${me.K} / <span class="d">${me.D}</span> / ${me.A}</p>
+          <p class="me-sub">가한 피해 ${fmtNum(me.dealt)} · 받은 피해 ${fmtNum(me.taken)} · 회복 ${fmtNum(me.healed)}${me.best >= 3 ? ` · ${multiLabel(me.best)}` : ''}</p>
+          <div class="me-augs">${myAugs.map(a => `<span class="aug-pill tier-${E.TIER_KEY[a.tier]}">${augIcon(a, 'xs')}${esc(a.name)}</span>`).join('')}</div>
+          <p class="build">빌드 궁합<span class="stars" aria-label="5점 중 ${fit.stars}점">${stars}</span>${comment}</p>
+        </div>
+        <div class="me-grade"><span class="grade">${me.grade}</span><small>${me.mvp ? 'MVP' : me.teamAce ? 'ACE' : '등급'}</small></div>
+      </div>
+      <div class="board-wrap"><table class="board">
+        <thead><tr><th>챔피언</th><th>증강</th><th>K / D / A</th><th>가한 피해</th><th>받은 피해</th><th>회복</th><th>골드</th><th>등급</th></tr></thead>
+        <tbody>
+          <tr class="team-row a"><td colspan="8">우리 팀 ${win ? '· 승리' : ''}</td></tr>${rows('A')}
+          <tr class="team-row b"><td colspan="8">상대 팀 ${win ? '' : '· 승리'}</td></tr>${rows('B')}
+        </tbody>
+      </table></div>
+      <details class="fights"><summary>한타 기록 ${r.fights.length}번</summary><ol>${fightLines}</ol></details>
+      <div class="actions">
+        <button class="btn primary big" data-action="again">한 판 더</button>
+        <button class="btn" data-action="copy-result">결과 복사</button>
+        <button class="btn" data-action="home">처음으로</button>
+      </div>
+      <p class="copy-note" id="copy-note" role="status"></p>
+    </section>`;
+  }
+  const multiLabel = n => (n >= 5 ? '펜타 킬' : n === 4 ? '쿼드라 킬' : '트리플 킬');
+
+  function render() {
+    const m = app.match;
+    let html = '';
+    try {
+      switch (app.screen) {
+        case 'tarot': html = viewTarot(m); break;
+        case 'champ': html = viewChamp(m); break;
+        case 'augment': html = viewAugment(m); break;
+        case 'loading': html = viewLoading(m); break;
+        case 'battle': html = viewBattle(m); break;
+        case 'result': html = viewResult(m); break;
+        default: app.screen = 'title'; html = viewTitle();
+      }
+    } catch (err) {
+      console.error(err);
+      app.screen = 'title'; app.match = null; html = viewTitle();
+    }
+    stage.innerHTML = html;
+    updateRecord();
+  }
+  function go(screen) {
+    app.screen = screen; render();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  // ───── 진행 ─────
+  function newGame() {
+    stopPlayback();
+    const seed = (Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0;
+    const m = E.newMatch(app.data, seed);
+    app.match = m; app.roleFilter = '전체';
+    if (!m.tarotChoices.length) { E.chooseTarot(m, app.data, -1); go('champ'); }
+    else go('tarot');
+  }
+  function chooseChamp(id) {
+    if (!E.setPlayerChamp(app.match, app.data, id)) return;
+    render();
+    if (innerWidth < 860) { const el = $('#champ-detail'); if (el) el.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
+  }
+  function doPick(id) {
+    const m = app.match;
+    if (!E.pickAugment(m, app.data, id)) return;
+    if (m.offer) { app.fresh = 'all'; render(); }
+    else go('loading');
+  }
+  function startPlayback() {
+    stopPlayback();
+    const m = app.match; const r = m.result; const d = app.data;
+    const name = slot => d.champById[r.players[slot].champId];
+    const queue = [];
+    for (const f of r.fights) {
+      queue.push({ kind: 'fight', f });
+      for (const e of f.events) queue.push({ kind: 'ev', e, f });
+      queue.push({ kind: 'end', f });
+    }
+    const step = Math.max(70, Math.min(240, 9500 / Math.max(1, queue.length)));
+    const st = { a: 0, b: 0 };
+    let i = 0;
+    const feed = $('#feed');
+    const push = html => { if (!feed) return; feed.insertAdjacentHTML('beforeend', html); feed.scrollTop = feed.scrollHeight; };
+    const who = (slot, cls) => { const c = name(slot); return `<span class="who ${cls}">${portrait(c, 'xs')}${esc(c.name)}</span>`; };
+    app.timer = setInterval(() => {
+      if (app.screen !== 'battle') { stopPlayback(); return; }
+      if (i >= queue.length) { stopPlayback(); setTimeout(() => { if (app.screen === 'battle') finishBattle(); }, 700); return; }
+      const q = queue[i++];
+      if (q.kind === 'fight') { push(`<li class="fight">${fmtTime(q.f.start)} · ${q.f.n}번째 한타</li>`); setClock(q.f.start); }
+      else if (q.kind === 'ev') {
+        const e = q.e;
+        if (e.kind === 'kill') {
+          const kt = r.players[e.killer].team;
+          if (kt === 'A') st.a++; else st.b++;
+          $('#ka') && ($('#ka').textContent = st.a); $('#kb') && ($('#kb').textContent = st.b);
+          push(`<li>${who(e.killer, kt === 'A' ? 'ka' : 'kb')}<span class="verb">처치</span>${who(e.victim, kt === 'A' ? 'kb' : 'ka')}${e.first ? '<span class="fb">선취점</span>' : ''}</li>`);
+          setClock(e.at);
+        } else if (e.kind === 'revive') push(`<li class="note">${esc(name(e.slot).name)} 부활</li>`);
+        else if (e.kind === 'multi') push(`<li class="multi">${esc(name(e.slot).name)} ${multiLabel(e.count)}!</li>`);
+      } else {
+        const f = q.f;
+        f.destroyed.forEach((n, k) => { const idx = f.lostAfter[f.loser] - f.destroyed.length + k; const pip = $(`#pip-${f.loser}-${idx}`); if (pip) pip.classList.add('down'); });
+        push(`<li class="end">${f.winner === 'A' ? '우리 팀' : '상대 팀'} 한타 승리${f.destroyed.length ? ` · ${f.loser === 'A' ? '우리' : '상대'} ${esc(f.destroyed.join(', '))} 파괴` : ''}</li>`);
+        setClock(f.end);
+      }
+    }, step);
+  }
+  function setClock(s) { const el = $('#clock'); if (el) el.textContent = fmtTime(s); }
+  function stopPlayback() { if (app.timer) { clearInterval(app.timer); app.timer = null; } }
+  function finishBattle() {
+    stopPlayback();
+    const m = app.match;
+    if (m && m.result && !m.recorded) {
+      m.recorded = true;
+      const rec = lsGet(LS_REC, { w: 0, l: 0 });
+      if (m.result.winner === 'A') rec.w++; else rec.l++;
+      lsSet(LS_REC, rec);
+    }
+    go('result');
+  }
+  function updateRecord() {
+    const rec = lsGet(LS_REC, null); const el = $('#record');
+    if (el) el.textContent = rec && rec.w + rec.l > 0 ? `이 브라우저 전적 ${rec.w}승 ${rec.l}패` : '';
+  }
+  function resultText() {
+    const m = app.match; const d = app.data; const r = m.result; const me = r.players[0];
+    const c = d.champById[me.champId]; const t = m.tarotId ? d.tarotById[m.tarotId] : null;
+    return [
+      '메롤 (리그 오브 레전드 팬게임) 결과',
+      t ? `운명 카드: ${t.numeral} ${t.name} (${dirLabel(t)})` : null,
+      `${r.winner === 'A' ? '승리' : '패배'} · 경기 시간 ${fmtTime(r.duration)} · 킬 ${r.killsA} : ${r.killsB}`,
+      `${c.name} (${c.role}) ${me.K}/${me.D}/${me.A} · 등급 ${me.grade}${me.mvp ? ' · MVP' : me.teamAce ? ' · ACE' : ''}`,
+      `증강: ${me.augIds.map(id => d.augById[id]?.name).filter(Boolean).join(', ')}`,
+    ].filter(Boolean).join('\n');
+  }
+  async function copyText(text, noteId) {
+    const note = $(`#${noteId}`);
+    try {
+      await navigator.clipboard.writeText(text);
+      if (note) note.textContent = '복사했어요. 디스코드나 메신저에 붙여 넣으세요.';
+    } catch (e) {
+      if (note) {
+        note.innerHTML = '이 화면에서는 자동 복사가 막혀 있어요. 아래 글을 선택해서 복사해 주세요.<textarea class="copy-box" readonly></textarea>';
+        const ta = note.querySelector('textarea'); ta.value = text; ta.focus(); ta.select();
+      }
+    }
+  }
+
+  // ───── 데이터 창 ─────
+  function openModal(tab) {
+    app.modal = tab || app.modal || 'load';
+    $('#modal').hidden = false;
+    renderModal();
+    $('#modal-close').focus();
+  }
+  function closeModal() {
+    app.modal = null; $('#modal').hidden = true;
+    $('#btn-data').focus();
+  }
+  function renderModal() {
+    if (!app.modal) return;
+    for (const k of ['load', 'guide', 'balance']) $(`#tab-${k}`).setAttribute('aria-selected', String(app.modal === k));
+    const body = $('#modal-body');
+    body.innerHTML = app.modal === 'guide' ? viewGuide() : app.modal === 'balance' ? viewBalance() : viewLoad();
+    if (app.modal === 'load') bindDrop();
+  }
+  function viewLoad() {
+    const d = app.data; const tc = d.tierCount; const hasUp = Object.keys(app.uploads).length > 0;
+    const warns = d.warnings.slice(0, 40).map(w => `<li><span>${esc(w.where)}</span>${esc(w.msg)}</li>`).join('');
+    return `<div class="data-tiles">
+        <div class="tile"><span class="src">${esc(app.sources.champions)}</span><b>${d.champions.length}명</b>캐릭터</div>
+        <div class="tile"><span class="src">${esc(app.sources.augments)}</span><b>${d.augments.length}개</b>증강 · 실버 ${tc['실버']} · 골드 ${tc['골드']} · 프리즘 ${tc['프리즘']}${d.augments.length - tc['실버'] - tc['골드'] - tc['프리즘'] ? ` · 특별 ${d.augments.length - tc['실버'] - tc['골드'] - tc['프리즘']}` : ''}</div>
+        <div class="tile"><span class="src">${esc(app.sources.tarot)}</span><b>${d.tarot.length}장</b>타로</div>
+      </div>
+      <label class="drop" id="drop" for="file-input">
+        <b>CSV 파일이나 그림 파일을 여기에 끌어다 놓으세요</b>
+        <span>엑셀에서 'CSV UTF-8'로 저장하는 걸 권장하지만, 그냥 'CSV'로 저장한 파일도 읽습니다. 어떤 표인지는 첫 줄의 열 이름을 보고 알아서 구분해요.</span>
+        <span class="btn small">파일 고르기</span>
+      </label>
+      ${app.notes.length ? `<ul class="notes">${app.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
+      <p class="muted">그림은 파일 이름을 아이디와 같게 하면(예: hail.png) 자동으로 붙어요. 표의 그림 칸에 경로를 적었다면 그 파일 이름과 맞춰도 됩니다. 올린 표는 이 브라우저에 남지만, 올린 그림은 새로고침하면 사라져요.</p>
+      ${warns ? `<h3 class="mini-head">확인할 점 ${d.warnings.length}개</h3><ul class="warns">${warns}</ul>` : '<p class="muted">표에서 문제를 찾지 못했어요.</p>'}
+      <div class="row"><button class="btn" data-action="clear-uploads"${hasUp ? '' : ' disabled'}>올린 표 지우고 샘플로 돌아가기</button></div>`;
+  }
+  function bindDrop() {
+    const drop = $('#drop'); if (!drop) return;
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+    drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); handleFiles(e.dataTransfer.files); });
+  }
+  async function handleFiles(list) {
+    const files = Array.from(list || []); if (!files.length) return;
+    const notes = []; let csvChanged = false; let imgCount = 0;
+    for (const f of files) {
+      if (/^image\//.test(f.type) || /\.(png|jpe?g|webp|gif)$/i.test(f.name)) {
+        const k = f.name.toLowerCase();
+        if (app.images.has(k)) URL.revokeObjectURL(app.images.get(k));
+        app.images.set(k, URL.createObjectURL(f)); imgCount++;
+        continue;
+      }
+      const text = E.decode(await f.arrayBuffer());
+      const kind = E.detectKind(text);
+      if (!kind) { notes.push(`${f.name}: 어떤 표인지 알 수 없어요. 첫 줄 열 이름(역할, 등급, 방향 중 하나)을 확인해 주세요.`); continue; }
+      app.uploads[kind] = text; csvChanged = true;
+      notes.push(`${f.name}: ${KIND_LABEL[kind]} 표로 불러왔어요.`);
+    }
+    if (imgCount) notes.push(`그림 ${imgCount}장을 붙였어요.`);
+    if (csvChanged) {
+      const saved = lsSet(LS_DATA, app.uploads);
+      if (!saved) notes.push('이 브라우저에 표를 저장하지 못해서, 새로고침하면 샘플로 돌아가요.');
+      rebuild();
+      if (app.match) { stopPlayback(); app.match = null; app.screen = 'title'; notes.push('진행 중이던 판은 새 표로 다시 시작해야 해서 처음 화면으로 돌아갔어요.'); }
+    }
+    app.notes = notes;
+    render(); renderModal();
+  }
+
+  function viewGuide() {
+    const tbl = (head, rows) => `<div class="tbl"><table><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    const req = '필수';
+    return `<div class="guide">
+      <h3>표 세 개를 만들면 됩니다</h3>
+      <p>엑셀 첫 줄에 아래 열 이름을 쓰고 한 줄에 하나씩 채운 뒤 <b>CSV UTF-8</b>로 저장하세요. 열 순서는 상관없고, 영어 열 이름(id, name 등)도 알아듣습니다. 아래 양식 복사 버튼으로 샘플을 그대로 가져가도 돼요.</p>
+      <h3>캐릭터 표</h3>
+      ${tbl(['열 이름', '', '설명'], [
+        ['<code>id</code>', req, '영문·숫자 코드. 그림 파일 이름을 이것과 같게 하면 그림이 자동으로 붙어요.'],
+        ['<code>이름</code>', req, '화면에 보이는 이름'],
+        ['<code>칭호</code>', '', '이름 아래 작은 글씨'],
+        ['<code>역할</code>', req, '탱커 · 전사 · 암살자 · 마법사 · 원딜 · 서포터 (전투 방식과 기본 능력치가 정해져요)'],
+        ['<code>피해유형</code>', '', '물리 또는 마법. 비우면 역할 기본값 (마법 암살자 같은 변형용)'],
+        ['<code>스킬</code>', '', '스킬 이름 (표시용)'],
+        ['<code>설명</code>', '', '챔피언 소개 글'],
+        ['<code>체력</code> <code>공격력</code> <code>주문력</code> <code>방어력</code> <code>마법저항력</code> <code>공격속도</code> <code>치명타</code>', '', '비우면 역할 기본값이 들어가요. 수치는 밸런스 측정 탭에서 확인하면서 맞춰요.'],
+        ['<code>그림</code>', '', '그림 파일 경로 (예: img/hail.png)'],
+      ])}
+      <h3>증강 표</h3>
+      ${tbl(['열 이름', '', '설명'], [
+        ['<code>id</code>', req, '영문·숫자 코드'],
+        ['<code>이름</code>', req, '카드 제목'],
+        ['<code>등급</code>', req, '실버 · 골드 · 프리즘'],
+        ['<code>설명</code>', '', '카드에 보이는 글. 비우면 효과 칸을 읽어서 자동으로 만들어요.'],
+        ['<code>효과</code>', req, '실제로 적용되는 효과 (아래 효과 문법)'],
+        ['<code>추천</code>', '', '컴퓨터가 고를 때 우대할 역할. 여러 개면 / 로 구분 (예: 서포터/탱커)'],
+        ['<code>풀</code>', '', '비우면 항상 등장. 이름을 적으면 타로가 그 풀을 열 때만 등장하는 특별 증강이 돼요.'],
+        ['<code>그림</code>', '', '아이콘 그림 경로'],
+      ])}
+      <h3>타로 표</h3>
+      ${tbl(['열 이름', '', '설명'], [
+        ['<code>id</code>', req, '영문·숫자 코드'],
+        ['<code>번호</code>', '', '카드 위쪽 숫자 (0, I, XVII 등)'],
+        ['<code>이름</code>', req, '카드 이름. 같은 이름의 정·역방향은 한 판에 같이 나오지 않아요.'],
+        ['<code>방향</code>', '', '정 또는 역. 역이면 카드가 거꾸로 놓여요.'],
+        ['<code>설명</code>', '', '카드를 뒤집었을 때 보이는 글'],
+        ['<code>효과</code>', '', '규칙 변화와 능력치 변화'],
+        ['<code>확률</code>', '', '뽑힐 비중. 기본 1, 0이면 안 나와요.'],
+        ['<code>그림</code>', '', '카드 앞면 그림 경로'],
+      ])}
+      <h3>효과 칸 쓰는 법</h3>
+      <p><code>대상:능력치+값</code>을 세미콜론(;)으로 이어 씁니다. 대상을 빼면 증강은 <b>나</b>, 타로는 <b>전체</b>에 적용돼요. 엑셀 셀 안에서 줄을 바꿔 써도 됩니다.</p>
+      ${tbl(['예시', '뜻'], [
+        ['<code>공격력+25</code>', '내 공격력 25 증가'],
+        ['<code>체력+12%</code>', '내 최대 체력 12% 증가'],
+        ['<code>팀:흡혈+5; 적:방어력-8</code>', '우리 팀 전원 흡혈 5%, 상대 팀 전원 방어력 8 감소'],
+        ['<code>처치당:공격력+3</code>', '처치에 관여할 때마다 공격력 3씩 쌓임'],
+        ['<code>한타당:주문력+4%</code>', '한타를 치를 때마다 주문력 4%씩 쌓임'],
+        ['<code>우리팀:피해증가+8</code>', '(타로) 플레이어 팀이 주는 피해 8% 증가'],
+      ])}
+      ${tbl(['대상', '적용 범위'], [
+        ['<code>나</code>', '증강 주인만 (증강 기본값)'],
+        ['<code>팀</code>', '증강 주인의 팀 전원. 타로에서는 플레이어 팀'],
+        ['<code>적</code>', '증강 주인의 상대 팀 전원. 타로에서는 반대 팀'],
+        ['<code>전체</code>', '양 팀 모두 (타로 기본값)'],
+        ['<code>우리팀</code> <code>상대팀</code>', '타로에서 쓰기 좋은 이름 (팀·적과 같아요)'],
+        ['<code>처치당</code> <code>한타당</code>', '처치 관여 횟수, 치른 한타 수만큼 값이 쌓임'],
+      ])}
+      ${tbl(['능력치', '뜻', '예시'], [
+        ['<code>체력</code>', '최대 체력. %를 붙이면 기본값 대비 비율', '<code>체력+300</code> <code>체력+12%</code>'],
+        ['<code>공격력</code> <code>주문력</code>', '피해량. 물리 챔피언은 공격력, 마법 챔피언은 주문력으로 스킬이 강해져요', '<code>주문력+35</code>'],
+        ['<code>방어력</code> <code>마법저항력</code>', '받는 물리 · 마법 피해 감소', '<code>방어력+30</code>'],
+        ['<code>공격속도</code>', '평타 속도. %는 비율, 숫자는 초당 횟수에 그대로 더함', '<code>공격속도+15%</code>'],
+        ['<code>치명타</code> <code>치명타피해</code>', '치명타 확률(%), 치명타 추가 피해(기본 175%)', '<code>치명타+12</code>'],
+        ['<code>흡혈</code>', '가한 피해의 %만큼 회복', '<code>흡혈+8</code>'],
+        ['<code>스킬가속</code>', '스킬 재사용 단축 (100이면 두 배 자주)', '<code>스킬가속+20</code>'],
+        ['<code>피해증가</code> <code>피해감소</code>', '주는 피해 %, 받는 피해 % (감소는 최대 70)', '<code>피해증가+12</code>'],
+        ['<code>회복증가</code>', '치유량 %', '<code>회복증가+35</code>'],
+        ['<code>방어관통</code>', '상대 방어력과 마법저항력의 % 무시', '<code>방어관통+25</code>'],
+        ['<code>보호막</code>', '한타 시작 보호막. %는 최대 체력 비율', '<code>보호막+12%</code>'],
+        ['<code>재생</code>', '초당 최대 체력 % 회복', '<code>재생+1.2</code>'],
+        ['<code>부활</code>', '한타마다 쓰러져도 체력 40%로 일어나는 횟수', '<code>부활+1</code>'],
+        ['<code>처형</code>', '체력이 이 % 이하인 적을 즉시 처치', '<code>처형+10</code>'],
+        ['<code>반사</code>', '받은 피해의 %를 고정 피해로 돌려줌', '<code>반사+25</code>'],
+        ['<code>광역</code>', '스킬이 주변 적 2명에게 이 %로 퍼짐', '<code>광역+35</code>'],
+        ['<code>기절</code>', '스킬 적중 시 기절 시간(초) 추가', '<code>기절+0.6</code>'],
+      ])}
+      <h3>타로 전용 규칙</h3>
+      ${tbl(['규칙', '뜻', '예시'], [
+        ['<code>증강횟수</code>', `증강 고르는 횟수 (기본 ${E.DEFAULT_RULES.picks}). 대상을 붙이면 한쪽 팀만`, '<code>증강횟수+1</code> <code>상대팀:증강횟수+1</code>'],
+        ['<code>리롤</code>', `리롤 횟수 (기본 ${E.DEFAULT_RULES.rerolls})`, '<code>리롤+2</code> <code>리롤=0</code>'],
+        ['<code>선택지</code>', `한 번에 보이는 카드 수 (기본 ${E.DEFAULT_RULES.choices}, 2~5)`, '<code>선택지+1</code>'],
+        ['<code>실버확률</code> <code>골드확률</code> <code>프리즘확률</code>', '등급이 나올 비중 (기본 40 · 40 · 20)', '<code>프리즘확률+25</code> <code>실버확률=0</code>'],
+        ['<code>등급고정</code>', '모든 증강을 한 등급으로', '<code>등급고정=프리즘</code>'],
+        ['<code>마지막등급</code> <code>N번째등급</code>', '특정 차례의 등급 확정', '<code>마지막등급=프리즘</code> <code>1번째등급=골드</code>'],
+        ['<code>증강풀</code>', '풀 칸에 그 이름을 적은 특별 증강을 매 선택마다 1장 보장', '<code>증강풀=별빛 무대</code>'],
+      ])}
+      <h3>양식 복사</h3>
+      <p>샘플 표를 복사해서 엑셀 A1 칸에 붙여 넣으면 열이 나뉘지 않을 수 있어요. 그럴 땐 메모장에 붙여 넣고 .csv로 저장한 뒤 엑셀로 여세요.</p>
+      <div class="row">
+        <button class="btn small" data-action="copy-template" data-kind="champions">캐릭터 양식 복사</button>
+        <button class="btn small" data-action="copy-template" data-kind="augments">증강 양식 복사</button>
+        <button class="btn small" data-action="copy-template" data-kind="tarot">타로 양식 복사</button>
+      </div>
+      <p class="copy-note" id="tpl-note" role="status"></p>
+    </div>`;
+  }
+
+  function viewBalance() {
+    const b = app.balance; const d = app.data;
+    const pct = x => `${(x * 100).toFixed(1)}%`;
+    const wrCell = o => { const w = o.w / o.n; return `<span class="wr">${pct(w)}<span class="bar"><i style="width:${(w * 100).toFixed(1)}%"></i></span></span>`; };
+    const pill = (o, min) => { if (o.n < min) return '<span class="pill">표본 적음</span>'; const w = o.w / o.n; return w >= 0.56 ? '<span class="pill hot">강함</span>' : w <= 0.44 ? '<span class="pill cold">약함</span>' : ''; };
+    const table = (title, entries, nameOf, min, note) => {
+      const rows = entries.sort((x, y) => y[1].w / y[1].n - x[1].w / x[1].n).map(([k, o]) => `<tr><td>${nameOf(k)}</td><td>${fmtNum(o.n)}</td><td>${wrCell(o)}</td><td>${pill(o, min)}</td></tr>`).join('');
+      return `<h3>${title}</h3>${note ? `<p class="muted">${note}</p>` : ''}<div class="tbl"><table><thead><tr><th>이름</th><th>표본</th><th>승률</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    };
+    let out = `<div class="bal">
+      <p class="muted">컴퓨터끼리 여러 판을 붙여서 승률을 봅니다. 50%에 가까울수록 고르게 맞춰진 거예요. 증강은 그 증강을 가진 챔피언 팀의 승률이라, 팀 전체에 거는 증강일수록 높게 나와요.</p>
+      <div class="row">
+        <button class="btn" data-action="run-balance" data-n="300"${b && b.running ? ' disabled' : ''}>300판 돌리기</button>
+        <button class="btn primary" data-action="run-balance" data-n="1000"${b && b.running ? ' disabled' : ''}>1000판 돌리기</button>
+      </div>`;
+    if (b) out += `<div class="progress"><i id="bal-progress" style="width:${(b.done / b.n * 100).toFixed(1)}%"></i></div><p class="muted" id="bal-count">${b.running ? `${fmtNum(b.done)} / ${fmtNum(b.n)}판 진행 중` : `${fmtNum(b.n)}판 완료`}</p>`;
+    if (b && b.report) {
+      const r = b.report;
+      out += `<div class="bal-tiles">
+        <div class="tile"><b>${fmtNum(r.n)}</b>판</div>
+        <div class="tile"><b>${fmtTime(r.avgLen)}</b>평균 경기 시간</div>
+        <div class="tile"><b>${r.avgKills.toFixed(1)}</b>평균 킬 (양 팀 합)</div>
+        <div class="tile"><b>${pct(r.sideA)}</b>플레이어 팀 승률</div>
+      </div>`;
+      out += table('역할군', Object.entries(r.role), k => esc(k), 50);
+      out += table('캐릭터', Object.entries(r.champ), k => esc(d.champById[k]?.name || k), 40);
+      out += table('증강', Object.entries(r.aug), k => { const a = d.augById[k]; return a ? `<span class="who-cell">${augIcon(a, 'xs')}${esc(a.name)} <span class="muted">${esc(a.tier)}</span></span>` : esc(k); }, 40);
+      if (Object.keys(r.tarot).length) out += table('타로 (플레이어 팀 승률)', Object.entries(r.tarot), k => { const t = d.tarotById[k]; return t ? `${esc(t.numeral)} ${esc(t.name)} · ${dirLabel(t)}` : esc(k); }, 30, '한쪽 팀만 강해지는 카드는 50%에서 벗어나는 게 정상이에요.');
+    }
+    return out + '</div>';
+  }
+  function runBalance(n) {
+    if (app.balance && app.balance.running) return;
+    const seed0 = (Date.now() >>> 0); const ms = []; let i = 0;
+    app.balance = { running: true, n, done: 0, report: null };
+    renderModal();
+    const step = () => {
+      const end = Math.min(n, i + 25);
+      for (; i < end; i++) ms.push(E.autoMatch(app.data, (seed0 + i * 7919) >>> 0));
+      app.balance.done = i;
+      if (i < n) {
+        const bar = $('#bal-progress'); if (bar) bar.style.width = `${(i / n * 100).toFixed(1)}%`;
+        const cnt = $('#bal-count'); if (cnt) cnt.textContent = `${fmtNum(i)} / ${fmtNum(n)}판 진행 중`;
+        setTimeout(step, 0);
+      } else {
+        app.balance.running = false;
+        app.balance.report = E.balanceReport(app.data, ms);
+        if (app.modal === 'balance') renderModal();
+      }
+    };
+    setTimeout(step, 30);
+  }
+
+  // ───── 클릭 ─────
+  const actions = {
+    start: () => newGame(),
+    again: () => newGame(),
+    home: () => { stopPlayback(); app.match = null; go('title'); },
+    flip: (b) => {
+      const m = app.match; if (!m || m.tarotPicked != null) return;
+      const idx = Number(b.dataset.i);
+      document.querySelectorAll('.tarot').forEach((el, i) => { el.disabled = true; el.classList.add(i === idx ? 'flipped' : 'dim'); if (i === idx) el.classList.add('chosen'); });
+      E.chooseTarot(m, app.data, idx);
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      setTimeout(() => {
+        if (app.match !== m || app.screen !== 'tarot') return;
+        const rv = $('#reveal'); const t = app.data.tarotById[m.tarotId];
+        if (rv && t) { rv.innerHTML = revealPanel(t, m); rv.classList.add('deal'); }
+      }, reduce ? 0 : 950);
+    },
+    'to-champ': () => go('champ'),
+    'to-augments': () => { if (app.match.champChosen === false) return; E.startRound(app.match, app.data); app.fresh = 'all'; go('augment'); },
+    'choose-champ': (b) => chooseChamp(b.dataset.id),
+    'random-champ': () => { const list = app.data.champions; chooseChamp(list[Math.floor(Math.random() * list.length)].id); },
+    'role-filter': (b) => { app.roleFilter = b.dataset.role; render(); },
+    pick: (b) => doPick(b.dataset.id),
+    reroll: (b) => { const i = Number(b.dataset.i); if (E.rerollCard(app.match, app.data, i)) { app.fresh = i; render(); } },
+    fight: () => { app.match.result = E.simulate(app.match, app.data); go('battle'); startPlayback(); },
+    skip: () => finishBattle(),
+    'copy-result': () => copyText(resultText(), 'copy-note'),
+    'open-data': () => openModal(app.modal || 'load'),
+    'close-modal': () => closeModal(),
+    tab: (b) => { app.modal = b.dataset.tab; renderModal(); },
+    'clear-uploads': () => {
+      app.uploads = {}; lsSet(LS_DATA, {}); app.notes = ['올린 표를 지웠어요. 샘플 데이터로 돌아갑니다.'];
+      rebuild(); stopPlayback(); app.match = null; app.screen = 'title'; render(); renderModal();
+    },
+    'copy-template': (b) => copyText(embedded(`csv-${b.dataset.kind}`), 'tpl-note'),
+    'run-balance': (b) => runBalance(Number(b.dataset.n)),
+  };
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-action]');
+    if (!b || b.disabled) return;
+    if (b.id === 'modal' && e.target !== b) return;
+    const fn = actions[b.dataset.action];
+    if (fn) fn(b, e);
+  });
+  $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+  $('#file-input').addEventListener('change', e => { handleFiles(e.target.files); e.target.value = ''; });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && app.modal) { closeModal(); return; }
+    if (app.modal) return;
+    if (app.screen === 'augment' && /^[1-9]$/.test(e.key) && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      const id = app.match && app.match.offer && app.match.offer.ids[Number(e.key) - 1];
+      if (id) doPick(id);
+    }
+  });
+  // 그림: 불러오면 보이고, 없으면 글자 자리 표시를 그대로 둠
+  document.addEventListener('load', e => { const t = e.target; if (t && t.classList && t.classList.contains('art')) t.classList.add('ok'); }, true);
+  document.addEventListener('error', e => { const t = e.target; if (t && t.classList && t.classList.contains('art')) t.remove(); }, true);
+
+  // ───── 칼바람 ─────
+  function wind() {
+    const cv = $('#wind'); const ctx = cv.getContext && cv.getContext('2d'); if (!ctx) return;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let w = 0, h = 0, dpr = 1;
+    const size = () => { dpr = Math.min(2, window.devicePixelRatio || 1); w = cv.width = Math.floor(innerWidth * dpr); h = cv.height = Math.floor(innerHeight * dpr); };
+    size(); addEventListener('resize', size);
+    const ps = Array.from({ length: 80 }, () => ({ x: Math.random(), y: Math.random(), r: 0.5 + Math.random() * 1.5, s: 0.0003 + Math.random() * 0.0012, a: 0.1 + Math.random() * 0.35, ph: Math.random() * 6.28 }));
+    const draw = tt => {
+      ctx.clearRect(0, 0, w, h);
+      for (const p of ps) {
+        if (!reduce) {
+          p.x += p.s * 1.7; p.y += p.s * 0.45 + Math.sin(tt / 1500 + p.ph) * 0.00025;
+          if (p.x > 1.05) { p.x = -0.05; p.y = Math.random(); }
+          if (p.y > 1.05) p.y = -0.05;
+        }
+        ctx.globalAlpha = p.a;
+        ctx.strokeStyle = '#d9eef2'; ctx.lineWidth = p.r * dpr; ctx.lineCap = 'round';
+        const len = p.s * 9000 * dpr;
+        ctx.beginPath(); ctx.moveTo(p.x * w, p.y * h); ctx.lineTo(p.x * w - len, p.y * h - len * 0.26); ctx.stroke();
+      }
+      if (!reduce && !document.hidden) requestAnimationFrame(draw);
+    };
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && !reduce) requestAnimationFrame(draw); });
+    requestAnimationFrame(draw);
+  }
+
+  // ───── 시작 ─────
+  function validMatch(m) {
+    const d = app.data;
+    return m && Array.isArray(m.slots) && m.slots.length === 10 && m.slots.every(s => d.champById[s.champId] && s.augIds.every(id => d.augById[id])) && (!m.tarotId || d.tarotById[m.tarotId]);
+  }
+  function start(saved) {
+    app.uploads = lsGet(LS_DATA, {}) || {};
+    rebuild();
+    if (saved && saved.match && validMatch(saved.match)) {
+      app.match = saved.match;
+      app.screen = saved.screen === 'battle' ? 'result' : saved.screen;
+      if (app.screen === 'augment' && !app.match.offer) app.screen = 'loading';
+      if (app.screen === 'result' && !app.match.result) app.screen = 'loading';
+    }
+    render();
+    wind();
+    tryFolder();
+  }
+  window.claude?.hot?.snapshot?.(() => ({ screen: app.screen, match: app.match }));
+  if (window.claude?.hot?.ready) window.claude.hot.ready(start);
+  else start(window.claude?.hot?.data ?? {});
+})();
+</script>
+</body>
+</html>
