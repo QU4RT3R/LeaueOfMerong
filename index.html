@@ -24,6 +24,7 @@
 }
 @property --spin{syntax:'<angle>';inherits:false;initial-value:0deg}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{height:100%}
 body{margin:0;background:var(--abyss);color:var(--frost);font-family:var(--font-body);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:
@@ -359,7 +360,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:
   </div>
   <div class="top-actions">
     <span class="record" id="record"></span>
-    <button class="btn small" id="btn-data" data-action="open-data">데이터 · 밸런스</button>
+    <button class="btn small" id="btn-data" data-action="open-data" hidden>데이터 · 밸런스</button>
   </div>
 </header>
 <main class="shell" id="stage"></main>
@@ -1985,7 +1986,7 @@ const Engine = (() => {
     fight: () => { app.match.result = E.simulate(app.match, app.data); go('battle'); startPlayback(); },
     skip: () => finishBattle(),
     'copy-result': () => copyText(resultText(), 'copy-note'),
-    'open-data': () => openModal(app.modal || 'load'),
+    'open-data': () => { if (isDev()) openModal(app.modal || 'load'); },
     'close-modal': () => closeModal(),
     tab: (b) => { app.modal = b.dataset.tab; renderModal(); },
     'clear-uploads': () => {
@@ -2048,6 +2049,13 @@ const Engine = (() => {
     const d = app.data;
     return m && Array.isArray(m.slots) && m.slots.length === 10 && m.slots.every(s => d.champById[s.champId] && s.augIds.every(id => d.augById[id])) && (!m.tarotId || d.tarotById[m.tarotId]);
   }
+  // 개발자 창은 주소 끝에 #dev 를 붙였을 때만 보임
+  const isDev = () => location.hash === '#dev';
+  function syncDev() {
+    $('#btn-data').hidden = !isDev();
+    if (!isDev() && app.modal) { app.modal = null; $('#modal').hidden = true; }
+  }
+  addEventListener('hashchange', syncDev);
   function start(saved) {
     app.uploads = lsGet(LS_DATA, {}) || {};
     rebuild();
@@ -2058,6 +2066,7 @@ const Engine = (() => {
       if (app.screen === 'result' && !app.match.result) app.screen = 'loading';
     }
     render();
+    syncDev();
     wind();
     tryFolder();
   }
